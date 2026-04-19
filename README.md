@@ -7,11 +7,11 @@
 ![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?style=for-the-badge&logo=firebase)
 ![Gemini AI](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google)
 ![Cloud Run](https://img.shields.io/badge/Cloud%20Run-Deployed-34A853?style=for-the-badge&logo=google-cloud)
-![Tests](https://img.shields.io/badge/Tests-88%20Passing-00ff88?style=for-the-badge&logo=vitest)
+![Tests](https://img.shields.io/badge/Tests-105%20Passing-00ff88?style=for-the-badge&logo=vitest)
 
 **AI-driven real-time crowd management and venue operations dashboard for large-scale sporting events.**
 
-🔗 **Live Demo:** [https://promptwar-app-cg2sihaoha-uc.a.run.app](https://promptwar-app-cg2sihaoha-uc.a.run.app)
+🔗 **Live Demo:** [https://promptwar-app-52090498784.us-central1.run.app](https://promptwar-app-52090498784.us-central1.run.app)
 
 </div>
 
@@ -28,7 +28,7 @@ PulseArena AI transforms the physical event experience by solving the core probl
 - 🌤️ **Environmental Awareness** — Real-time weather telemetry via Open-Meteo API, anchored to stadium GPS coordinates
 - 🤖 **AI Assistant** — Context-aware chatbot powered by Google Gemini 2.5 Flash for instant query resolution
 
-Built for high-capacity operations across global venues including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
+Built for high-capacity operations exclusively engineered for 15 premier Indian Cricket Stadiums including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
 
 ---
 
@@ -37,14 +37,15 @@ Built for high-capacity operations across global venues including **Narendra Mod
 | Module | Description |
 |---|---|
 | 📊 **Mission Control Dashboard** | Live KPIs: crowd flow score, attendance counter, alert feed, zone status grid |
-| 🌍 **Multi-Venue Management** | Switch between 5+ international stadiums with re-anchored Leaflet map views |
+| 🌍 **Multi-Venue Management** | Switch between 15 major Indian cricket stadiums with re-anchored Leaflet map views |
 | 🌤️ **Live Weather Widget** | Open-Meteo API pulling real-time atmospheric data per stadium GPS coordinates |
 | 🗺️ **Live Operations Map** | Interactive Leaflet.js map with real-time zone density heat overlays |
 | 🎫 **Smart Queue System** | Join queues digitally, track live position, auto-update every 3 seconds |
 | ⏱️ **Live Operations Clock** | Precision synchronized digital clock embedded in the global UI header |
 | 🔍 **Predictive Global Search** | Instant cross-dashboard search: venues, zones, features, and AI queries |
 | 🧭 **Smart Navigation** | Crowd-aware routing with side-by-side path comparisons and time savings |
-| 🚨 **Alert Center** | Centralized hub for crowd, safety, weather, and system notifications with AI recommendations |
+| 🎫 **Digital E-Tickets** | Authenticated QR pass with visually mocked "Add to Google Wallet" integration capability |
+| 🚨 **Alert Center** | Centralized hub for crowd, safety, weather, and system push notifications (FCM configured) |
 | 🤖 **AI Assistant** | Gemini 2.5 Flash powered chatbot with rule-based fast paths + AI fallback |
 | 🔧 **Admin Console** | Admin-only panel with live Firebase Firestore zone override controls |
 
@@ -123,11 +124,14 @@ npm run test
 
 ---
 
-## 🌐 Google Services Integration (14 Services Active)
+## 🌐 Google Services Integration
 
 | Service | Usage |
 |---|---|
 | **Google Gemini 2.5 Flash** | AI generative insights (Dashboard, Alert Center, Queues, Chatbot) |
+| **Google Wallet API (Mock)**| Interactive UI capability configured on E-Ticket dashboard |
+| **Google Maps Indoor API (Mock)**| Indicated routing capability for intelligent pathfinding |
+| **Google Cloud Vision API (Mock)**| Indicated active CCTV density calculation in Admin panel |
 | **Firebase App Config** | Firebase Remote Config for remote venue mode and AI toggles |
 | **Firebase Authentication** | Email/Password + Google OAuth2 Sign-In + Password Reset |
 | **Firebase Analytics** | Page view and custom event tracking via `logEvent` + `trackEvent` |
@@ -136,7 +140,6 @@ npm run test
 | **Google Cloud Run** | Zero-downtime, auto-scaling unmanaged production deployment |
 | **Google Tag Manager** | Enterprise event routing tag script in `index.html` |
 | **Google reCAPTCHA v3** | Invisible bot protection script for authentication workflows |
-| **Google Translate API** | Real-time multi-language translation for critical safety alerts |
 | **Firebase Storage** | Initialized Cloud Storage SDK for admin venue media distribution |
 | **Firebase Realtime Database** | Initialized RTDB websocket for ultra-low latency live poll metrics |
 | **Firebase Cloud Messaging** | Notification permission request handler for live push alerts |
@@ -219,7 +222,7 @@ VITE_GEMINI_API_KEY=your_gemini_api_key
 ### Running Tests
 
 ```bash
-npm run test          # Run all 88 tests once
+npm run test          # Run all 105 tests once
 npm run test:watch    # Watch mode during development
 ```
 
@@ -294,7 +297,7 @@ src/
 │   ├── firestoreService.test.js
 │   └── setup.js
 └── constants/
-    └── venues.js             # 5 international stadium definitions
+    └── venues.js             # 15 Indian cricket stadium definitions
 ```
 
 ---
