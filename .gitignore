@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables — NEVER commit these (contains secret Firebase keys)
+.env
+.env.local
+.env.production
+
+# Firebase local config
+.firebaserc
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.log
