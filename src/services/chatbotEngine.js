@@ -110,7 +110,7 @@ async function findBestResponse(input, userName, activeVenue) {
 
   // Check info queries
   if (/\b(wait|queue|line|how long)\b/i.test(lower)) return KNOWLEDGE_BASE.waitTimes;
-  if (/\b(crowd|busy|density|packed|full|empty|capacity|status)\b/i.test(lower)) return KNOWLEDGE_BASE.crowdStatus;
+  if (/\b(crowd(ed)?|busy|density|packed|full|empty|capacity|status)\b/i.test(lower)) return KNOWLEDGE_BASE.crowdStatus;
   if (/\b(weather|temp|temperature|rain|sun|hot|cold|forecast)\b/i.test(lower)) {
     return await fetchRealWeather(activeVenue);
   }

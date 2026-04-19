@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal, Sparkles, Volume2, Globe } from 'lucide-react';
+import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal, Sparkles, Volume2 } from 'lucide-react';
 import { useCrowd } from '../context/CrowdContext';
-import { generateAlertRecommendation, translateText } from '../services/geminiInsights';
+import { generateAlertRecommendation } from '../services/geminiInsights';
 import { messaging } from '../services/firebase';
 import { onMessage, getToken } from 'firebase/messaging';
 
@@ -9,7 +9,6 @@ export default function Alerts() {
   const { state, dispatch } = useCrowd();
   const [filter, setFilter] = useState('all');
   const [aiRecs, setAiRecs] = useState({});
-  const [translations, setTranslations] = useState({});
   const [fcmStatus, setFcmStatus] = useState('Enable Push Notifications');
 
   // FCM Setup
@@ -57,12 +56,6 @@ export default function Alerts() {
     } catch {
       setFcmStatus('Push Permissions Denied');
     }
-  };
-
-  const handleTranslate = async (alert) => {
-    if (translations[alert.id]) return;
-    const translated = await translateText(alert.message, 'Spanish');
-    setTranslations(prev => ({ ...prev, [alert.id]: translated }));
   };
 
   const handleMarkAllRead = () => {
@@ -124,21 +117,23 @@ export default function Alerts() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mb-6 border-b border-slate-700/50 pb-4">
-        <SlidersHorizontal size={16} className="text-slate-500 mr-2" />
-        {['all', 'critical', 'warning', 'info'].map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
-              filter === f 
-                ? 'bg-white/10 text-white border-white/20 border shadow-sm' 
-                : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
-            }`}
-          >
-            {f}
-          </button>
-        ))}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-700/50 pb-4">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal size={16} className="text-slate-500 mr-2" />
+          {['all', 'critical', 'warning', 'info'].map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
+                filter === f 
+                  ? 'bg-white/10 text-white border-white/20 border shadow-sm' 
+                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -168,11 +163,6 @@ export default function Alerts() {
                 </div>
                 
                 <p className="text-sm text-slate-400">{alert.message}</p>
-                {translations[alert.id] && (
-                  <p className="text-sm text-slate-300 mt-1 italic pl-2 border-l-2 border-slate-600 bg-white/5 py-1">
-                    🇪🇸 {translations[alert.id]}
-                  </p>
-                )}
 
                 {/* Gemini AI Recommendation for high-priority alerts */}
                 {(alert.priority === 'critical' || alert.priority === 'warning') && !alert.read && (
@@ -197,14 +187,6 @@ export default function Alerts() {
                     >
                       Dismiss
                     </button>
-                    {!translations[alert.id] && (
-                      <button 
-                        onClick={() => handleTranslate(alert)}
-                        className="text-xs font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1"
-                      >
-                        <Globe size={12} /> Translate
-                      </button>
-                    )}
                   </div>
                 )}
               </div>

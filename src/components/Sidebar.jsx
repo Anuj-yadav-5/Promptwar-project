@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Map as MapIcon, Users, Navigation2, Bell, Bot, ChevronRight, LogOut, User as UserIcon, Settings, Lock, Unlock } from 'lucide-react';
+import { LayoutDashboard, Map as MapIcon, Users, Navigation2, Bell, Bot, ChevronRight, LogOut, User as UserIcon, Settings, Lock, Unlock, Ticket as TicketIcon } from 'lucide-react';
 import { useCrowd } from '../context/CrowdContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,6 +11,7 @@ const navItems = [
   { path: '/stadium/queues', label: 'Queues', icon: Users, color: 'green' },
   { path: '/stadium/navigate', label: 'Navigation', icon: Navigation2, color: 'pink' },
   { path: '/stadium/alerts', label: 'Alerts', icon: Bell, color: 'cyan' },
+  { path: '/stadium/ticket', label: 'E-Ticket', icon: TicketIcon, color: 'green' },
   { path: '/stadium/assistant', label: 'AI Assistant', icon: Bot, color: 'purple' },
 ];
 

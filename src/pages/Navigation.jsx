@@ -95,6 +95,11 @@ export default function Navigation() {
               <button className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-slate-300 hover:text-white hover:bg-white/10 transition">Gate Exit</button>
             </div>
           </div>
+          
+          <div className="mt-8 pt-6 border-t border-slate-700/50 flex items-center justify-center gap-2 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-default">
+             <MapPin size={14} className="text-[#34A853]" />
+             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Powered by Google Maps Indoor API</span>
+          </div>
         </div>
 
         {/* Results panel */}

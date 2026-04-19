@@ -26,6 +26,7 @@ const Navigation = lazy(() => import('./pages/Navigation'));
 const Alerts = lazy(() => import('./pages/Alerts'));
 const AiAssistant = lazy(() => import('./pages/AiAssistant'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Ticket = lazy(() => import('./pages/Ticket'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                 <Route path="navigate" element={<Navigation />} />
                 <Route path="alerts" element={<Alerts />} />
                 <Route path="assistant" element={<AiAssistant />} />
+                <Route path="ticket" element={<Ticket />} />
                 <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
               </Route>
               

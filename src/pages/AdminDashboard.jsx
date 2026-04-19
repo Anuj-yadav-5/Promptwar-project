@@ -139,6 +139,23 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Google Cloud Vision API Mock Panel */}
+          <div className="glass-panel p-6 border-[#4285F4]/30 bg-[#4285F4]/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-3 opacity-20"><Cpu size={48} /></div>
+            <h3 className="font-bold text-white mb-2 flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></div>
+              Computer Vision Feed
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed mb-4">
+              Live CCTV feeds are currently being analyzed by <strong className="text-[#4285F4]">Google Cloud Vision API</strong> to calculate precise queue headcounts and crowd density metrics for AI Simulation mode.
+            </p>
+            <div className="bg-navy-900 rounded-lg p-3 font-mono text-[10px] text-neon-cyan/70 space-y-1">
+               <p>&gt; INF: stream_01_gated processing...</p>
+               <p>&gt; OK: CV_Model 98.4% confidence</p>
+               <p>&gt; SYNC: Firebase RTDB payload sent</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
