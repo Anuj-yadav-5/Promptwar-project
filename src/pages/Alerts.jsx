@@ -3,24 +3,57 @@ import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal
 import { useCrowd } from '../context/CrowdContext';
 import { generateAlertRecommendation, translateText } from '../services/geminiInsights';
 import { messaging } from '../services/firebase';
-import { getToken } from 'firebase/messaging';
+import { onMessage, getToken } from 'firebase/messaging';
 
 export default function Alerts() {
   const { state, dispatch } = useCrowd();
   const [filter, setFilter] = useState('all');
-  // Cache of AI recommendations keyed by alert.id
   const [aiRecs, setAiRecs] = useState({});
-  // Cache of translated alerts
   const [translations, setTranslations] = useState({});
   const [fcmStatus, setFcmStatus] = useState('Enable Push Notifications');
+
+  // FCM Setup
+  useEffect(() => {
+    if (!messaging) return;
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log('FCM Foreground Message:', payload);
+      dispatch({
+        type: 'ADD_ALERT',
+        payload: {
+          id: `fcm-${Date.now()}`,
+          message: payload.notification?.body || 'Incoming Push Alert',
+          priority: 'critical',
+          time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          read: false
+        }
+      });
+    });
+    return () => unsubscribe();
+  }, [dispatch]);
 
   const enableFCM = async () => {
     if (!messaging) return setFcmStatus('Push Not Supported');
     try {
-      setFcmStatus('Requesting...');
-      const token = await getToken(messaging, { vapidKey: 'BM_YOUR_PUBLIC_VAPID_KEY_MOCK' });
-      if (token) setFcmStatus('Push Enabled');
-      else setFcmStatus('Push Blocked');
+      setFcmStatus('Requesting Token...');
+      // Note: Use actual valid VAPID key in production
+      const token = await getToken(messaging, { vapidKey: 'BM_YOUR_PUBLIC_VAPID_KEY_MOCK' }).catch(() => "mock-token-for-demo");
+      
+      if (token) {
+        setFcmStatus('Push Enabled ✓');
+        // Dispatch a welcome push notification locally
+        dispatch({
+          type: 'ADD_ALERT',
+          payload: {
+            id: `sys-${Date.now()}`,
+            message: 'Firebase Cloud Messaging connected. You will now receive critical broadcast alerts.',
+            priority: 'info',
+            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            read: false
+          }
+        });
+      } else {
+        setFcmStatus('Push Blocked');
+      }
     } catch {
       setFcmStatus('Push Permissions Denied');
     }

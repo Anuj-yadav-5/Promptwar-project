@@ -123,7 +123,7 @@ npm run test
 
 ---
 
-## 🌐 Google Services Integration (17 Services Active)
+## 🌐 Google Services Integration (14 Services Active)
 
 | Service | Usage |
 |---|---|
@@ -134,9 +134,6 @@ npm run test
 | **Firebase Perf Monitoring** | Automatic page load tracing + network request monitoring |
 | **Cloud Firestore** | Admin zone overrides, broadcast alerts, user logs, venue preferences |
 | **Google Cloud Run** | Zero-downtime, auto-scaling unmanaged production deployment |
-| **Google Maps Embed API** | Real-time traffic overlay rendering in the Mission Control Dashboard |
-| **YouTube Embed API** | Unlisted live streaming / highlights playback for stadium feed |
-| **Google Calendar API** | Upcoming events schedule embedded widget |
 | **Google Tag Manager** | Enterprise event routing tag script in `index.html` |
 | **Google reCAPTCHA v3** | Invisible bot protection script for authentication workflows |
 | **Google Translate API** | Real-time multi-language translation for critical safety alerts |
