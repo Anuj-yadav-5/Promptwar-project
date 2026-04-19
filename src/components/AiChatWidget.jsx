@@ -6,19 +6,27 @@ import { useAuth } from '../context/AuthContext';
 function TypewriterText({ text, onComplete }) {
   const [displayedText, setDisplayedText] = useState('');
   
+  // Use a ref to keep track of the latest onComplete without triggering re-renders
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
   useEffect(() => {
     let index = 0;
     setDisplayedText('');
     const timer = setInterval(() => {
-      setDisplayedText((prev) => prev + text.charAt(index));
-      index++;
-      if (index === text.length) {
+      if (index < text.length) {
+        setDisplayedText((prev) => prev + text.charAt(index));
+        index++;
+      }
+      if (index >= text.length) {
         clearInterval(timer);
-        if (onComplete) onComplete();
+        if (onCompleteRef.current) onCompleteRef.current();
       }
     }, 15); // Adjust typing speed here
     return () => clearInterval(timer);
-  }, [text, onComplete]);
+  }, [text]);
 
   // Format text similarly to before
   const formatText = (content) => {
