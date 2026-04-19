@@ -4,15 +4,9 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { Shield, Zap, Activity, ArrowRight, MapPin, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCrowd } from '../context/CrowdContext';
+import { VENUES } from '../constants/venues';
 import 'leaflet/dist/leaflet.css';
-
-const VENUES = [
-  { id: 'modi-stadium', name: 'Narendra Modi Stadium', city: 'Ahmedabad', lat: 23.0917, lng: 72.5971, capacity: '132,000' },
-  { id: 'wankhede', name: 'Wankhede Stadium', city: 'Mumbai', lat: 18.9388, lng: 72.8257, capacity: '33,000' },
-  { id: 'eden-gardens', name: 'Eden Gardens', city: 'Kolkata', lat: 22.5646, lng: 88.3433, capacity: '68,000' },
-  { id: 'arun-jaitley', name: 'Arun Jaitley Stadium', city: 'Delhi', lat: 28.6376, lng: 77.2433, capacity: '41,800' },
-  { id: 'chinnaswamy', name: 'M. Chinnaswamy Stadium', city: 'Bengaluru', lat: 12.9788, lng: 77.5996, capacity: '40,000' }
-];
 
 const customPin = new L.DivIcon({
   html: `<div style="background-color: #00d4ff; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #00d4ff"></div>`,
@@ -24,6 +18,7 @@ const customPin = new L.DivIcon({
 export default function LandingPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { dispatch } = useCrowd();
   
   // Interactive Cursor Tracking State
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -36,7 +31,10 @@ export default function LandingPage() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const handleCTA = () => navigate(user ? '/stadium' : '/auth');
+  const handleCTA = (venue = VENUES[0]) => {
+    dispatch({ type: 'SET_VENUE', payload: venue });
+    navigate(user ? '/stadium' : '/auth');
+  };
 
   return (
     <div className="min-h-screen bg-navy-900 overflow-x-hidden text-white selection:bg-neon-purple/30 selection:text-white relative">
@@ -78,7 +76,7 @@ export default function LandingPage() {
               </button>
             </div>
           ) : (
-            <button onClick={handleCTA} className="gradient-btn px-6 py-2 text-sm shadow-[0_0_20px_rgba(0,212,255,0.3)] hover:shadow-[0_0_25px_rgba(0,212,255,0.5)]">
+            <button onClick={() => handleCTA(VENUES[0])} className="gradient-btn px-6 py-2 text-sm shadow-[0_0_20px_rgba(0,212,255,0.3)] hover:shadow-[0_0_25px_rgba(0,212,255,0.5)]">
               Get Started
             </button>
           )}
@@ -155,7 +153,7 @@ export default function LandingPage() {
                       </div>
 
                       <button 
-                        onClick={handleCTA} 
+                        onClick={() => handleCTA(venue)} 
                         className="w-full py-1.5 gradient-btn text-[11px] rounded flex justify-center items-center gap-1"
                       >
                         {user ? 'Open Dashboard' : 'Sign In'} <ArrowRight size={12} />

@@ -3,6 +3,7 @@ import { generateZoneData, generateQueueData, generateFlowHistory, getActivityFe
 import { db } from '../services/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { generateInitialAlerts, generateAlert } from '../services/alertEngine';
+import { VENUES } from '../constants/venues';
 
 const CrowdContext = createContext();
 
@@ -20,7 +21,8 @@ const initialState = {
   crowdFlowScore: 0,
   userQueues: [],
   toasts: [],
-  adminSettings: { mode: 'ai', zoneOverrides: {} }
+  adminSettings: { mode: 'ai', zoneOverrides: {} },
+  activeVenue: VENUES[0]
 };
 
 function crowdReducer(state, action) {
@@ -57,6 +59,8 @@ function crowdReducer(state, action) {
       return { ...state, adminSettings: action.payload };
     case 'SET_INITIAL_DATA':
       return { ...state, ...action.payload };
+    case 'SET_VENUE':
+      return { ...state, activeVenue: action.payload };
     case 'ADD_ALERT':
       return {
         ...state,

@@ -40,13 +40,18 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       )}
 
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 glass-panel border-l-0 border-y-0 rounded-none rounded-r-2xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center shadow-[0_0_20px_rgba(0,212,255,0.4)]">
+        <div 
+          className="p-6 flex items-center gap-3 cursor-pointer group"
+          onClick={() => navigate('/')}
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(0,212,255,0.6)] group-hover:scale-105">
             <MapIcon size={24} className="text-white" />
           </div>
           <div>
-            <h1 className="font-display font-bold text-xl tracking-wide text-white">Pulse<span className="text-neon-cyan">Arena</span></h1>
-            <p className="text-[10px] text-neon-purple uppercase tracking-widest font-semibold flex items-center gap-1">
+            <h1 className="font-display font-bold text-xl tracking-wide text-white transition-colors duration-300 group-hover:text-neon-cyan">
+              Pulse<span className="text-neon-cyan group-hover:text-white transition-colors duration-300">Arena</span>
+            </h1>
+            <p className="text-[10px] text-neon-purple uppercase tracking-widest font-semibold flex items-center gap-1 group-hover:text-neon-cyan transition-colors duration-300">
               <span className="live-dot"></span> Live AI
             </p>
           </div>

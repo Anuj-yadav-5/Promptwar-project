@@ -13,8 +13,6 @@ const createIcon = (color) => new L.DivIcon({
   iconAnchor: [6, 6]
 });
 
-// Exact Center of Narendra Modi Stadium
-const CENTER = [23.0918, 72.5973];
 
 const getZoneColor = (density) => {
   if (density < 0.4) return '#00ff88'; // Green
@@ -22,50 +20,6 @@ const getZoneColor = (density) => {
   if (density < 0.85) return '#ff8c00'; // Orange
   return '#ff3355'; // Red
 };
-
-// Generate highly precise polygon coordinates for stadium architecture
-function generatePolygonCoords(zone) {
-  if (zone.type === 'stand') {
-    let startAngle = 0, endAngle = 0;
-    if (zone.id.includes('north')) { startAngle = 315; endAngle = 405; }
-    else if (zone.id.includes('east')) { startAngle = 45; endAngle = 135; }
-    else if (zone.id.includes('south')) { startAngle = 135; endAngle = 225; }
-    else if (zone.id.includes('west')) { startAngle = 225; endAngle = 315; }
-
-    const coords = [];
-    // Outer arc of the stand (~140m radius)
-    for (let a = startAngle; a <= endAngle; a += 5) {
-      const rad = (a * Math.PI) / 180;
-      coords.push([CENTER[0] + Math.cos(rad) * 0.00130, CENTER[1] + Math.sin(rad) * 0.00140]);
-    }
-    // Inner arc of the stand (~70m radius edge of pitch)
-    for (let a = endAngle; a >= startAngle; a -= 5) {
-      const rad = (a * Math.PI) / 180;
-      coords.push([CENTER[0] + Math.cos(rad) * 0.00065, CENTER[1] + Math.sin(rad) * 0.00075]);
-    }
-    return coords;
-  }
-
-  if (zone.type === 'concourse') {
-    let startAngle = 0, endAngle = 0;
-    if (zone.id.includes('-n')) { startAngle = 270; endAngle = 450; }
-    else if (zone.id.includes('-s')) { startAngle = 90; endAngle = 270; }
-    
-    const coords = [];
-    // Outer arc of concourse (~160m radius)
-    for (let a = startAngle; a <= endAngle; a += 5) {
-      const rad = (a * Math.PI) / 180;
-      coords.push([CENTER[0] + Math.cos(rad) * 0.00155, CENTER[1] + Math.sin(rad) * 0.00165]);
-    }
-    // Inner arc of concourse (matches outer stand ~140m)
-    for (let a = endAngle; a >= startAngle; a -= 5) {
-      const rad = (a * Math.PI) / 180;
-      coords.push([CENTER[0] + Math.cos(rad) * 0.00135, CENTER[1] + Math.sin(rad) * 0.00145]);
-    }
-    return coords;
-  }
-  return [];
-}
 
 // Determine radius for heat zones (in meters) based on type
 const getZoneRadius = (type) => {
@@ -93,8 +47,55 @@ function MapUpdater({ center }) {
 
 export default function CrowdMap() {
   const { state } = useCrowd();
-  const [activeZone, setActiveZone] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [activeZone, setActiveZone] = useState(null);
+
+  // Dynamic Center based on active venue selection
+  const activeCenter = [state.activeVenue?.lat || 23.0918, state.activeVenue?.lng || 72.5973];
+  
+  // Calculate offset to dynamically shift the mock Narendra Modi zones to the selected venue
+  const latOffset = activeCenter[0] - 23.0918;
+  const lngOffset = activeCenter[1] - 72.5973;
+
+  function generatePolygonCoords(zone) {
+    if (zone.type === 'stand') {
+      let startAngle = 0, endAngle = 0;
+      if (zone.id.includes('north')) { startAngle = 315; endAngle = 405; }
+      else if (zone.id.includes('east')) { startAngle = 45; endAngle = 135; }
+      else if (zone.id.includes('south')) { startAngle = 135; endAngle = 225; }
+      else if (zone.id.includes('west')) { startAngle = 225; endAngle = 315; }
+
+      const coords = [];
+      for (let a = startAngle; a <= endAngle; a += 5) {
+        const rad = (a * Math.PI) / 180;
+        coords.push([activeCenter[0] + Math.cos(rad) * 0.00130, activeCenter[1] + Math.sin(rad) * 0.00140]);
+      }
+      for (let a = endAngle; a >= startAngle; a -= 5) {
+        const rad = (a * Math.PI) / 180;
+        coords.push([activeCenter[0] + Math.cos(rad) * 0.00065, activeCenter[1] + Math.sin(rad) * 0.00075]);
+      }
+      return coords;
+    }
+
+    if (zone.type === 'concourse') {
+      let startAngle = 0, endAngle = 0;
+      if (zone.id.includes('n')) { startAngle = 270; endAngle = 450; }
+      else { startAngle = 90; endAngle = 270; }
+
+      const coords = [];
+      for (let a = startAngle; a <= endAngle; a += 5) {
+        const rad = (a * Math.PI) / 180;
+        coords.push([activeCenter[0] + Math.cos(rad) * 0.00150, activeCenter[1] + Math.sin(rad) * 0.00160]);
+      }
+      for (let a = endAngle; a >= startAngle; a -= 5) {
+        const rad = (a * Math.PI) / 180;
+        coords.push([activeCenter[0] + Math.cos(rad) * 0.00130, activeCenter[1] + Math.sin(rad) * 0.00140]);
+      }
+      return coords;
+    }
+
+    return [];
+  }
 
   const filteredZones = state.zones.filter(z => {
     if (filter === 'all') return true;
@@ -177,7 +178,7 @@ export default function CrowdMap() {
 
         {/* Leaflet Map */}
         <MapContainer 
-          center={CENTER} 
+          center={activeCenter} 
           zoom={18} 
           className="h-full w-full outline-none"
           zoomControl={false}
@@ -187,7 +188,7 @@ export default function CrowdMap() {
             url="http://mt0.google.com/vt/lyrs=y,traffic&hl=en&x={x}&y={y}&z={z}"
             className="map-tiles-dark"
           />
-          <MapUpdater center={CENTER} />
+          <MapUpdater center={activeCenter} />
           
           {filteredZones.map(zone => {
             const color = getZoneColor(zone.density);
@@ -214,7 +215,7 @@ export default function CrowdMap() {
             return (
               <Circle 
                 key={zone.id}
-                center={[zone.lat, zone.lng]}
+                center={[zone.lat + latOffset, zone.lng + lngOffset]}
                 radius={radius}
                 pathOptions={{ color: color, fillColor: color, fillOpacity: 0.45, weight: 2 }}
                 eventHandlers={{ click: () => setActiveZone(zone) }}
@@ -232,7 +233,7 @@ export default function CrowdMap() {
           {state.queues.map(q => (
             <Marker 
               key={q.id} 
-              position={[q.lat, q.lng]}
+              position={[q.lat + latOffset, q.lng + lngOffset]}
               icon={createIcon('#00d4ff')}
             >
               <Popup>

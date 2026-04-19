@@ -44,8 +44,30 @@ const QUICK_ACTIONS = [
   { label: "💡 Tips", query: "tips" },
   { label: "🌤️ Weather", query: "weather" },
 ];
+async function fetchRealWeather(venue) {
+  if (!venue) return KNOWLEDGE_BASE.weather;
 
-function findBestResponse(input, userName) {
+  try {
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${venue.lat}&longitude=${venue.lng}&current_weather=true&timezone=auto`);
+    if (!res.ok) throw new Error('API down');
+    const data = await res.json();
+    const w = data.current_weather;
+    
+    let condition = 'Clear ☀️';
+    if (w.weathercode >= 1 && w.weathercode <= 3) condition = 'Partly Cloudy ⛅';
+    if (w.weathercode >= 45 && w.weathercode <= 48) condition = 'Foggy 🌫️';
+    if (w.weathercode >= 51 && w.weathercode <= 67) condition = 'Rain 🌧️';
+    if (w.weathercode >= 71 && w.weathercode <= 82) condition = 'Snow 🌨️';
+    if (w.weathercode >= 95) condition = 'Thunderstorms ⛈️';
+    
+    return `🌤️ **Live Weather at ${venue.name}** (${venue.city}):\n\n- **Condition**: ${condition}\n- **Temperature**: ${w.temperature}°C\n- **Wind**: ${w.windspeed} km/h\n\n💧 Remember to stay hydrated! Free water stations are available at all concourses.`;
+  } catch (error) {
+    console.warn("Weather fetch failed, utilizing fallback:", error);
+    return KNOWLEDGE_BASE.weather;
+  }
+}
+
+async function findBestResponse(input, userName, activeVenue) {
   const lower = input.toLowerCase();
   
   const greetName = userName ? ` ${userName.split(' ')[0]}` : '';
@@ -61,32 +83,34 @@ function findBestResponse(input, userName) {
   }
 
   // Check directions
-  if (/restroom|bathroom|toilet|washroom|loo/i.test(lower)) return KNOWLEDGE_BASE.directions.restroom;
-  if (/food|eat|hungry|burger|pizza|biryani|snack/i.test(lower)) return KNOWLEDGE_BASE.directions.food;
-  if (/exit|leave|go out|way out|gate/i.test(lower)) return KNOWLEDGE_BASE.directions.exit;
-  if (/park|car|vehicle/i.test(lower)) return KNOWLEDGE_BASE.directions.parking;
-  if (/medical|doctor|nurse|first.?aid|emergency|help/i.test(lower)) return KNOWLEDGE_BASE.directions.medical;
-  if (/vip|lounge|premium|exclusive/i.test(lower)) return KNOWLEDGE_BASE.directions.vip;
-  if (/merch|shop|store|buy|souvenir|jersey/i.test(lower)) return KNOWLEDGE_BASE.directions.merchandise;
+  if (/\b(restroom|bathroom|toilet|washroom|loo)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.restroom;
+  if (/\b(food|eat|eating|hungry|burger|pizza|biryani|snack)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.food;
+  if (/\b(exit|leave|go out|way out|gate)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.exit;
+  if (/\b(park|parking|car|vehicle)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.parking;
+  if (/\b(medical|doctor|nurse|first.?aid|emergency|help)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.medical;
+  if (/\b(vip|lounge|premium|exclusive)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.vip;
+  if (/\b(merch|shop|store|buy|souvenir|jersey)\b/i.test(lower)) return KNOWLEDGE_BASE.directions.merchandise;
 
   // Check info queries
-  if (/wait|queue|line|how long/i.test(lower)) return KNOWLEDGE_BASE.waitTimes;
-  if (/crowd|busy|density|packed|full|empty|capacity/i.test(lower)) return KNOWLEDGE_BASE.crowdStatus;
-  if (/weather|temp|rain|sun|hot|cold/i.test(lower)) return KNOWLEDGE_BASE.weather;
-  if (/schedule|event|time|program|match|game|start|when/i.test(lower)) return KNOWLEDGE_BASE.events;
-  if (/tip|advice|suggest|recommend/i.test(lower)) return KNOWLEDGE_BASE.tips;
+  if (/\b(wait|queue|line|how long)\b/i.test(lower)) return KNOWLEDGE_BASE.waitTimes;
+  if (/\b(crowd|busy|density|packed|full|empty|capacity|status)\b/i.test(lower)) return KNOWLEDGE_BASE.crowdStatus;
+  if (/\b(weather|temp|temperature|rain|sun|hot|cold|forecast)\b/i.test(lower)) {
+    return await fetchRealWeather(activeVenue);
+  }
+  if (/\b(schedule|event|time|program|match|game|start|when)\b/i.test(lower)) return KNOWLEDGE_BASE.events;
+  if (/\b(tip|tips|advice|suggest|recommend)\b/i.test(lower)) return KNOWLEDGE_BASE.tips;
 
   // Fallback
   return KNOWLEDGE_BASE.fallback[Math.floor(Math.random() * KNOWLEDGE_BASE.fallback.length)];
 }
 
-export function getChatResponse(userMessage, userName = null) {
+export async function getChatResponse(userMessage, userName = null, activeVenue = null) {
+  const response = await findBestResponse(userMessage, userName, activeVenue);
+  
+  // Simulate AI thinking time
   return new Promise((resolve) => {
-    // Simulate AI thinking time
-    const delay = 500 + Math.random() * 1000;
-    setTimeout(() => {
-      resolve(findBestResponse(userMessage, userName));
-    }, delay);
+    const delay = 300 + Math.random() * 800;
+    setTimeout(() => resolve(response), delay);
   });
 }
 

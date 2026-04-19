@@ -2,6 +2,7 @@ import React from 'react';
 import { Users, Clock, AlertTriangle, Activity, ChevronRight, Activity as PulseIcon } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import DensityBadge from '../components/DensityBadge';
+import WeatherWidget from '../components/WeatherWidget';
 import { useCrowd } from '../context/CrowdContext';
 
 export default function Dashboard() {
@@ -91,6 +92,9 @@ export default function Dashboard() {
 
         {/* Right Sidebar: Predictions & Hotspots */}
         <div className="space-y-6">
+          {/* Live Weather */}
+          <WeatherWidget />
+
           {/* AI Predictions */}
           <div className="glass-panel p-6 border-neon-purple/30">
             <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">

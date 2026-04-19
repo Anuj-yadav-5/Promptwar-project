@@ -2,7 +2,7 @@
 
 > **AI-driven real-time crowd management and venue operations dashboard for large-scale sporting events.**
 
-Built for the **Narendra Modi Stadium, Ahmedabad** — the world's largest cricket stadium with a capacity of 132,000 spectators.
+Built specifically for high-capacity operational management across global venues including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
 
 ---
 
@@ -10,10 +10,11 @@ Built for the **Narendra Modi Stadium, Ahmedabad** — the world's largest crick
 
 PulseArena AI transforms the physical event experience by solving the core problems of modern large-scale venues:
 
-- 🚶 **Crowd Congestion** — real-time density monitoring across all stadium zones
+- 🚶 **Crowd Congestion** — real-time density monitoring across all stadium zones, offset accurately per stadium coordinates
 - ⏱️ **Long Wait Times** — virtual queuing with live wait time predictions
 - 🧭 **Navigation Confusion** — AI-recommended crowd-aware routing
 - 🚨 **Safety Alerts** — instant critical incident broadcasting to all connected users
+- 🌤️ **Environmental Awareness** — real-time weather telemetry fetching for optimal event readiness
 
 ---
 
@@ -22,12 +23,16 @@ PulseArena AI transforms the physical event experience by solving the core probl
 | Module | Description |
 |---|---|
 | 📊 **Mission Control Dashboard** | Live KPIs, crowd flow score, attendance counter, AI activity feed |
+| 🌍 **Multi-Venue Management** | Dynamically switch between multiple international stadiums with re-anchored maps |
+| 🌤️ **Live Weather Widget** | Integrated Open-Meteo API pulling real-time venue-specific atmospheric data |
 | 🗺️ **Live Operations Map** | Interactive Leaflet.js map with real-time zone density heat overlays |
 | 🎫 **Smart Queue System** | Virtual queuing — join digitally, track queue length and wait times live |
+| ⏱️ **Live Operations Clock** | Precision synchronized digital operation-time embedded in the global UI |
+| 🔍 **Predictive Global Search** | Real-time global dashboard search bar to instantly query and navigate |
 | 🧭 **Smart Navigation** | Crowd-aware routing comparing standard vs AI-recommended paths |
-| 🚨 **Alert Center** | Centralized hub for crowd, weather, safety, and system notifications |
-| 🤖 **AI Assistant** | Context-aware chatbot answering venue queries with a typewriter effect |
-| 🔧 **Admin Console** | Admin-only data management panel — manual zone density overrides via Firebase |
+| 🚨 **Alert Center** | Centralized hub for crowd, safety, and system notifications |
+| 🤖 **AI Assistant** | Context-aware, fully animated AI agent answering queries and pulling live API data |
+| 🔧 **Admin Console** | Admin-only data management panel driven via Google Firebase |
 
 ---
 
@@ -35,7 +40,7 @@ PulseArena AI transforms the physical event experience by solving the core probl
 
 - **Google Firebase Authentication** — Email/Password + Google OAuth2 Sign-In
 - **Exact Email Whitelist** — Admin panel access is locked to a hardcoded verified email address. No fuzzy matching, no PIN, no localStorage bypass
-- **Route-Level Guard** — `AdminRoute` component blocks direct URL access to `/stadium/admin` for non-admins, independent of the sidebar
+- **Route-Level Guard** — `AdminRoute` component blocks direct URL access to `/stadium/admin` for non-admins
 - **Protected Routes** — All dashboard paths require a valid authenticated session
 
 ---
@@ -49,30 +54,15 @@ PulseArena AI transforms the physical event experience by solving the core probl
 
 ---
 
-## 🏗️ Stability
-
-- **Global ErrorBoundary** — Wraps the entire app; catches unexpected runtime errors and shows a styled recovery screen instead of a blank white page
-- **Firebase Graceful Fallback** — Auth state listener is fully synchronous; admin verification runs as a non-blocking background task
-- **Split Data Architecture** — Simulation logic lives entirely in `src/services/`, completely decoupled from UI components
-
----
-
-## ♿ Accessibility
-
-- `aria-label` attributes on all icon-only interactive buttons
-- High-contrast neon-on-dark colour palette (WCAG-informed)
-- Semantic HTML structure with proper heading hierarchy per page
-- Keyboard-navigable dropdowns and modals
-
----
-
-## 🔗 Google Services Used
+## 🔗 External APIs & Services
 
 | Service | Usage |
 |---|---|
+| **Open-Meteo API** | Free, open-source real-time weather tracking mapped to the exact stadium GPS coordinates |
 | **Firebase Authentication** | Google OAuth2 Sign-In, Email/Password, Password Reset |
 | **Firebase Analytics** | Page view tracking via `logEvent` |
 | **Cloud Firestore** | Admin panel zone overrides, broadcast alerts, admin email registry |
+| **Leaflet & OpenStreetMap** | Geospatial visualization framework and map tiles |
 
 ---
 
@@ -86,7 +76,7 @@ PulseArena AI transforms the physical event experience by solving the core probl
 | Styling | Vanilla CSS custom design system (Dark Cyber theme) |
 | Maps | Leaflet.js via `react-leaflet` |
 | Icons | Lucide React |
-| Auth & DB | Google Firebase (Auth + Firestore + Analytics) |
+| Backend | Google Firebase |
 
 ---
 
@@ -122,7 +112,7 @@ Open `http://localhost:5173` in your browser.
 
 ## 🎨 Design System
 
-The application uses a premium **Dark Cyber** aesthetic:
+The application uses an ultra-premium **Dark Cyber** aesthetic driven entirely by custom Vanilla CSS and interactive glassmorphism components.
 
 | Token | Value |
 |---|---|
@@ -130,54 +120,8 @@ The application uses a premium **Dark Cyber** aesthetic:
 | Primary Accent | Neon Cyan `#00d4ff` |
 | Secondary Accent | Electric Purple `#7b2ff7` |
 | Alert / Action | Hot Pink `#ff2d95` |
-| Warning | Neon Orange `#ff8c00` |
-| Success | Neon Green `#00ff88` |
 | Display Font | `Orbitron` (Google Fonts) |
 | Body Font | `Inter` (Google Fonts) |
-
-UI components use glassmorphism panels, animated gradients, and neon glow effects.
-
----
-
-## 🧠 Simulation Engine
-
-All crowd data (densities, queues, alerts) is generated client-side by `src/services/crowdSimulator.js`. The engine models **4 event phases** (Pre-Event, Event Active, Half-Time, Post-Event) that dynamically shift crowd distribution across 18 stadium zones — creating realistic fluctuations without requiring a live IoT backend.
-
-The Admin Console (admin-only) allows switching from AI simulation to **Manual Control** mode, where zone densities are driven directly from Firebase Firestore sliders in real time.
-
----
-
-## 📁 Project Structure
-
-```
-src/
-├── App.jsx                  # Route definitions + lazy loading
-├── main.jsx                 # App entry point + ErrorBoundary
-├── components/
-│   ├── Layout.jsx           # Header, sidebar shell, Account Settings modal
-│   ├── Sidebar.jsx          # Navigation + admin-aware menu
-│   ├── ProtectedRoute.jsx   # Auth guard + AdminRoute guard
-│   ├── AiChatWidget.jsx     # Floating AI chatbot
-│   └── ToastNotification.jsx
-├── context/
-│   ├── AuthContext.jsx      # Firebase auth state + admin whitelist
-│   └── CrowdContext.jsx     # Simulation engine + Firebase real-time sync
-├── pages/
-│   ├── Dashboard.jsx
-│   ├── CrowdMap.jsx
-│   ├── QueueSystem.jsx
-│   ├── Navigation.jsx
-│   ├── Alerts.jsx
-│   ├── AiAssistant.jsx
-│   ├── AdminDashboard.jsx
-│   ├── AuthPage.jsx
-│   ├── LandingPage.jsx
-│   └── NotFound.jsx
-└── services/
-    ├── firebase.js          # Firebase app + Auth + Firestore exports
-    ├── crowdSimulator.js    # Zone & queue simulation engine
-    └── alertEngine.js       # Alert generation logic
-```
 
 ---
 
