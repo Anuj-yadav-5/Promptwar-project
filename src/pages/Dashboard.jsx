@@ -1,23 +1,50 @@
-import React from 'react';
-import { Users, Clock, AlertTriangle, Activity, ChevronRight, Activity as PulseIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, Clock, AlertTriangle, Activity, ChevronRight, Activity as PulseIcon, Sparkles } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import DensityBadge from '../components/DensityBadge';
 import WeatherWidget from '../components/WeatherWidget';
 import { useCrowd } from '../context/CrowdContext';
+import { generateCrowdInsight } from '../services/geminiInsights';
 
 export default function Dashboard() {
   const { state } = useCrowd();
+  const [aiInsight, setAiInsight] = useState('Analyzing crowd patterns with Gemini AI...');
+  const [insightLoading, setInsightLoading] = useState(true);
+
 
   // Get top 3 most crowded zones
   const topCrowded = [...state.zones]
     .sort((a, b) => b.density - a.density)
     .slice(0, 3);
 
+  // Fetch Gemini AI insight once zones are loaded
+  useEffect(() => {
+    if (!state.zones.length) return;
+    setInsightLoading(true);
+    generateCrowdInsight(
+      { zones: state.zones, avgWaitTime: state.avgWaitTime, crowdFlowScore: state.crowdFlowScore, activeAlerts: state.activeAlerts },
+      state.activeVenue?.name
+    ).then(insight => {
+      setAiInsight(insight);
+      setInsightLoading(false);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.crowdFlowScore]); // Re-run when flow score changes significantly
+
   return (
     <div className="space-y-6 page-enter max-w-full overflow-hidden">
       <div>
         <h1 className="text-3xl font-display font-bold text-white mb-2">Platform Overview</h1>
         <p className="text-slate-400">Real-time intelligence and crowd metrics across the venue.</p>
+      </div>
+
+      {/* Gemini AI Insight Banner */}
+      <div className="glass-panel p-4 border-neon-purple/30 bg-neon-purple/5 flex items-start gap-3">
+        <Sparkles size={18} className={`text-neon-purple mt-0.5 shrink-0 ${insightLoading ? 'animate-pulse' : ''}`} />
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-neon-purple mb-1">Gemini AI Insight</p>
+          <p className="text-sm text-slate-200">{aiInsight}</p>
+        </div>
       </div>
 
       {/* KPI Cards */}

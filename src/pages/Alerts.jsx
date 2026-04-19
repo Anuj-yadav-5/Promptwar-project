@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useCrowd } from '../context/CrowdContext';
+import { generateAlertRecommendation } from '../services/geminiInsights';
 
 export default function Alerts() {
   const { state, dispatch } = useCrowd();
   const [filter, setFilter] = useState('all');
+  // Cache of AI recommendations keyed by alert.id
+  const [aiRecs, setAiRecs] = useState({});
 
   const handleMarkAllRead = () => {
     dispatch({ type: 'MARK_ALL_ALERTS_READ' });
@@ -13,6 +16,13 @@ export default function Alerts() {
   const handleMarkRead = (id) => {
     dispatch({ type: 'MARK_ALERT_READ', payload: id });
   };
+
+  // Fetch Gemini recommendation for critical/warning alerts not yet cached
+  const fetchRec = useCallback(async (alert) => {
+    if (aiRecs[alert.id] || alert.priority === 'info') return;
+    const rec = await generateAlertRecommendation(alert);
+    setAiRecs(prev => ({ ...prev, [alert.id]: rec }));
+  }, [aiRecs]);
 
   const getIcon = (priority) => {
     switch (priority) {
@@ -92,6 +102,21 @@ export default function Alerts() {
                 </div>
                 
                 <p className="text-sm text-slate-400">{alert.message}</p>
+
+                {/* Gemini AI Recommendation for high-priority alerts */}
+                {(alert.priority === 'critical' || alert.priority === 'warning') && !alert.read && (
+                  <div
+                    className="mt-2 flex items-start gap-2 text-xs text-neon-purple/80 cursor-pointer hover:text-neon-purple transition-colors"
+                    onClick={() => fetchRec(alert)}
+                  >
+                    <Sparkles size={12} className="mt-0.5 shrink-0" />
+                    <span>
+                      {aiRecs[alert.id]
+                        ? aiRecs[alert.id]
+                        : 'Tap for Gemini AI recommendation →'}
+                    </span>
+                  </div>
+                )}
                 
                 {!alert.read && (
                   <button 
