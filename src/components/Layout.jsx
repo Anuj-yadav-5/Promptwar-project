@@ -112,6 +112,8 @@ export default function Layout() {
             <button
               className="lg:hidden text-slate-400 hover:text-white transition-colors shrink-0"
               onClick={() => setIsSidebarOpen(true)}
+              aria-label="Open navigation menu"
+              aria-expanded={isSidebarOpen}
             >
               <Menu size={24} />
             </button>
@@ -188,6 +190,8 @@ export default function Layout() {
               <Search size={16} className={`transition-colors duration-300 ${isSearchOpen ? 'text-neon-cyan' : 'text-slate-400'}`} />
               <input
                 type="text"
+                id="global-search"
+                aria-label="Search venues, maps, and features"
                 placeholder="Search venues, maps, AI..."
                 className="bg-transparent border-none outline-none text-sm text-white placeholder-slate-500 w-48 focus:w-64 transition-all duration-300"
                 value={searchQuery}

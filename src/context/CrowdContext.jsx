@@ -4,6 +4,7 @@ import { db } from '../services/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { generateInitialAlerts, generateAlert } from '../services/alertEngine';
 import { VENUES } from '../constants/venues';
+import { logUserAction, saveUserVenuePreference } from '../services/firestoreService';
 
 const CrowdContext = createContext();
 
@@ -110,6 +111,24 @@ export function CrowdProvider({ children }) {
   const [state, dispatch] = useReducer(crowdReducer, initialState);
   const [isReady, setIsReady] = useState(false);
 
+  // Track current user uid for Firestore logging
+  const [currentUid, setCurrentUid] = useState(null);
+
+  // Expose uid setter for AuthContext integration (called from useAuth hook consumer)
+  const setUid = useCallback((uid) => setCurrentUid(uid), []);
+
+  /** Wraps JOIN_QUEUE and logs the action to Firestore */
+  const joinQueue = useCallback((queue) => {
+    dispatch({ type: 'JOIN_QUEUE', payload: queue });
+    logUserAction(currentUid, 'join_queue', { queueId: queue.id, queueName: queue.name });
+  }, [currentUid]);
+
+  /** Wraps SET_VENUE and persists the preference to Firestore */
+  const setVenue = useCallback((venue) => {
+    dispatch({ type: 'SET_VENUE', payload: venue });
+    saveUserVenuePreference(currentUid, venue.id);
+  }, [currentUid]);
+
   // Initialize data
   useEffect(() => {
     // Generate initial dynamic frame based on mock locations
@@ -203,7 +222,7 @@ export function CrowdProvider({ children }) {
   }
 
   return (
-    <CrowdContext.Provider value={{ state, dispatch, addToast }}>
+    <CrowdContext.Provider value={{ state, dispatch, addToast, joinQueue, setVenue, setUid }}>
       {children}
     </CrowdContext.Provider>
   );

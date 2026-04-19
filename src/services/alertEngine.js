@@ -24,6 +24,10 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+/**
+ * Generates a single random stadium alert from the ALERT_TEMPLATES list.
+ * @returns {{ id: number, category: string, title: string, message: string, priority: string, icon: string, timestamp: string, read: boolean, zone: string }}
+ */
 export function generateAlert() {
   const template = pickRandom(ALERT_TEMPLATES);
   const zone = pickRandom(ZONES);
@@ -39,6 +43,11 @@ export function generateAlert() {
   };
 }
 
+/**
+ * Generates an initial batch of alerts for seeding the alert feed on startup.
+ * @param {number} [count=12] - Number of alerts to generate.
+ * @returns {Array<Object>} Array of alert objects with staggered past timestamps.
+ */
 export function generateInitialAlerts(count = 12) {
   const alerts = [];
   const minutesAgo = [1, 3, 5, 8, 12, 15, 20, 25, 30, 35, 40, 45];

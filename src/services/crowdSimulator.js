@@ -69,6 +69,11 @@ function randomFluctuation(base, variance = 0.15) {
   return base * (1 + (Math.random() - 0.5) * 2 * variance);
 }
 
+/**
+ * Generates real-time crowd density data for all stadium zones.
+ * Applies event phase multipliers and random fluctuations.
+ * @returns {Array<Object>} Array of zone objects with occupancy, density, status, and trend.
+ */
 export function generateZoneData() {
   tickCount++;
   // Switch phase every ~40 ticks (~2 minutes at 3s intervals)
@@ -103,6 +108,10 @@ export function generateZoneData() {
   });
 }
 
+/**
+ * Generates real-time queue wait time data for all queue points.
+ * @returns {Array<Object>} Array of queue objects with currentWait, queueLength, and trend.
+ */
 export function generateQueueData() {
   return DYNAMIC_QUEUES.map(q => {
     const multiplier = getMultiplier(q.category);
@@ -120,6 +129,11 @@ export function generateQueueData() {
   });
 }
 
+/**
+ * Generates historical crowd flow data over a number of time points.
+ * @param {number} [points=20] - Number of historical data points to generate.
+ * @returns {Array<Object>} Array of time-series crowd flow records.
+ */
 export function generateFlowHistory(points = 20) {
   const history = [];
   for (let i = 0; i < points; i++) {
@@ -159,6 +173,10 @@ export function getPredictions() {
   ];
 }
 
+/**
+ * Returns the name of the currently active event phase.
+ * @returns {string} Phase name, e.g. 'Pre-Event', 'Half-Time'.
+ */
 export function getCurrentPhase() {
   return EVENT_PHASES[currentPhaseIndex].name;
 }

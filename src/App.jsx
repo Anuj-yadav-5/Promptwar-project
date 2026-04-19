@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import ProtectedRoute, { AdminRoute } from './components/ProtectedRoute';
 import { CrowdProvider } from './context/CrowdContext';
 import { AuthProvider } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Standard loading component for lazy routes
 const PageLoader = () => (
@@ -31,31 +32,33 @@ function App() {
   return (
     <AuthProvider>
       <CrowdProvider>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route
-              path="/stadium"
-              element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="map" element={<CrowdMap />} />
-              <Route path="queues" element={<QueueSystem />} />
-              <Route path="navigate" element={<Navigation />} />
-              <Route path="alerts" element={<Alerts />} />
-              <Route path="assistant" element={<AiAssistant />} />
-              <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            </Route>
-            
-            {/* Catch-all 404 Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route
+                path="/stadium"
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Dashboard />} />
+                <Route path="map" element={<CrowdMap />} />
+                <Route path="queues" element={<QueueSystem />} />
+                <Route path="navigate" element={<Navigation />} />
+                <Route path="alerts" element={<Alerts />} />
+                <Route path="assistant" element={<AiAssistant />} />
+                <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              </Route>
+              
+              {/* Catch-all 404 Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </CrowdProvider>
     </AuthProvider>
   );

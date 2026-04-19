@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics, logEvent } from 'firebase/analytics';
+import { getPerformance } from 'firebase/performance';
 import {
   getAuth,
   GoogleAuthProvider,
@@ -35,6 +36,16 @@ export const analytics = (() => {
       : null;
   } catch (e) {
     console.warn('[PulseArena] Analytics disabled:', e.message);
+    return null;
+  }
+})();
+
+// Firebase Performance Monitoring — tracks page load, network requests, custom traces
+export const perf = (() => {
+  try {
+    return typeof window !== 'undefined' ? getPerformance(app) : null;
+  } catch (e) {
+    console.warn('[PulseArena] Performance Monitoring disabled:', e.message);
     return null;
   }
 })();

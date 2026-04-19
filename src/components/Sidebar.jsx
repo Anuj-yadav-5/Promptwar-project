@@ -39,7 +39,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         />
       )}
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 glass-panel border-l-0 border-y-0 rounded-none rounded-r-2xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+      <aside
+        role="complementary"
+        aria-label="Application Sidebar"
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 glass-panel border-l-0 border-y-0 rounded-none rounded-r-2xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
         <div 
           className="p-6 flex items-center gap-3 cursor-pointer group"
           onClick={() => navigate('/')}
@@ -57,7 +60,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav role="navigation" aria-label="Main navigation" className="flex-1 px-4 py-6 space-y-2">
           {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -67,6 +70,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
+                aria-current={isActive ? 'page' : undefined}
+                aria-label={item.label}
                 className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${isActive
                     ? `bg-neon-${item.color}/10 border border-neon-${item.color}/30 text-white shadow-[0_0_15px_rgba(var(--color-${item.color}),0.15)]`
                     : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'

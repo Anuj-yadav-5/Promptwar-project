@@ -1,8 +1,19 @@
 # 🏟️ PulseArena AI — Smart Stadium Experience Platform
 
-> **AI-driven real-time crowd management and venue operations dashboard for large-scale sporting events.**
+<div align="center">
 
-Built specifically for high-capacity operational management across global venues including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
+![PulseArena AI](https://img.shields.io/badge/PulseArena-AI%20Platform-00d4ff?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgN2wxMCA1IDEwLTVMMTIgMnpNMiAxN2wxMCA1IDEwLTVNMiAxMmwxMCA1IDEwLTUiLz48L3N2Zz4=)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)
+![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?style=for-the-badge&logo=firebase)
+![Gemini AI](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google)
+![Cloud Run](https://img.shields.io/badge/Cloud%20Run-Deployed-34A853?style=for-the-badge&logo=google-cloud)
+![Tests](https://img.shields.io/badge/Tests-88%20Passing-00ff88?style=for-the-badge&logo=vitest)
+
+**AI-driven real-time crowd management and venue operations dashboard for large-scale sporting events.**
+
+🔗 **Live Demo:** [https://promptwar-app-cg2sihaoha-uc.a.run.app](https://promptwar-app-cg2sihaoha-uc.a.run.app)
+
+</div>
 
 ---
 
@@ -10,11 +21,14 @@ Built specifically for high-capacity operational management across global venues
 
 PulseArena AI transforms the physical event experience by solving the core problems of modern large-scale venues:
 
-- 🚶 **Crowd Congestion** — real-time density monitoring across all stadium zones, offset accurately per stadium coordinates
-- ⏱️ **Long Wait Times** — virtual queuing with live wait time predictions
-- 🧭 **Navigation Confusion** — AI-recommended crowd-aware routing
-- 🚨 **Safety Alerts** — instant critical incident broadcasting to all connected users
-- 🌤️ **Environmental Awareness** — real-time weather telemetry fetching for optimal event readiness
+- 🚶 **Crowd Congestion** — Real-time density monitoring across all stadium zones with live heatmap overlays
+- ⏱️ **Long Wait Times** — Virtual queuing with AI-predicted wait times and digital position tracking
+- 🧭 **Navigation Confusion** — AI-recommended crowd-aware routing vs standard path comparisons
+- 🚨 **Safety Alerts** — Instant critical incident broadcasting with priority classification (Info / Warning / Critical)
+- 🌤️ **Environmental Awareness** — Real-time weather telemetry via Open-Meteo API, anchored to stadium GPS coordinates
+- 🤖 **AI Assistant** — Context-aware chatbot powered by Google Gemini 2.5 Flash for instant query resolution
+
+Built for high-capacity operations across global venues including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
 
 ---
 
@@ -22,47 +36,119 @@ PulseArena AI transforms the physical event experience by solving the core probl
 
 | Module | Description |
 |---|---|
-| 📊 **Mission Control Dashboard** | Live KPIs, crowd flow score, attendance counter, AI activity feed |
-| 🌍 **Multi-Venue Management** | Dynamically switch between multiple international stadiums with re-anchored maps |
-| 🌤️ **Live Weather Widget** | Integrated Open-Meteo API pulling real-time venue-specific atmospheric data |
+| 📊 **Mission Control Dashboard** | Live KPIs: crowd flow score, attendance counter, alert feed, zone status grid |
+| 🌍 **Multi-Venue Management** | Switch between 5+ international stadiums with re-anchored Leaflet map views |
+| 🌤️ **Live Weather Widget** | Open-Meteo API pulling real-time atmospheric data per stadium GPS coordinates |
 | 🗺️ **Live Operations Map** | Interactive Leaflet.js map with real-time zone density heat overlays |
-| 🎫 **Smart Queue System** | Virtual queuing — join digitally, track queue length and wait times live |
-| ⏱️ **Live Operations Clock** | Precision synchronized digital operation-time embedded in the global UI |
-| 🔍 **Predictive Global Search** | Real-time global dashboard search bar to instantly query and navigate |
-| 🧭 **Smart Navigation** | Crowd-aware routing comparing standard vs AI-recommended paths |
-| 🚨 **Alert Center** | Centralized hub for crowd, safety, and system notifications |
-| 🤖 **AI Assistant** | Context-aware, fully animated AI agent answering queries and pulling live API data |
-| 🔧 **Admin Console** | Admin-only data management panel driven via Google Firebase |
+| 🎫 **Smart Queue System** | Join queues digitally, track live position, auto-update every 3 seconds |
+| ⏱️ **Live Operations Clock** | Precision synchronized digital clock embedded in the global UI header |
+| 🔍 **Predictive Global Search** | Instant cross-dashboard search: venues, zones, features, and AI queries |
+| 🧭 **Smart Navigation** | Crowd-aware routing with side-by-side path comparisons and time savings |
+| 🚨 **Alert Center** | Centralized hub for crowd, safety, weather, and system notifications |
+| 🤖 **AI Assistant** | Gemini 2.5 Flash powered chatbot with rule-based fast paths + AI fallback |
+| 🔧 **Admin Console** | Admin-only panel with live Firebase Firestore zone override controls |
+
+---
+
+## 🤖 AI Integration
+
+### Google Gemini 2.5 Flash
+The PulseArena AI Assistant uses a **dual-mode response engine**:
+
+1. **Rule-Based Fast Path** — Instant responses for common queries (directions, wait times, food, exits, medical, parking, VIP, merchandise, event schedule)
+2. **Gemini AI Fallback** — For all other queries, calls `gemini-2.5-flash` via the `@google/genai` SDK to generate contextual, stadium-aware responses
+
+```js
+// chatbotEngine.js — simplified flow
+const ruleResponse = findBestResponse(input, userName, activeVenue);
+if (ruleResponse) return ruleResponse;
+
+// Fallback to Gemini AI
+const aiResponse = await geminiAI.models.generateContent({
+  model: 'gemini-2.5-flash',
+  contents: `Stadium assistant context: ${buildSystemPrompt(userName, activeVenue)}\n\nUser: ${input}`
+});
+return aiResponse.text;
+```
 
 ---
 
 ## 🔐 Security Architecture
 
-- **Google Firebase Authentication** — Email/Password + Google OAuth2 Sign-In
-- **Exact Email Whitelist** — Admin panel access is locked to a hardcoded verified email address. No fuzzy matching, no PIN, no localStorage bypass
-- **Route-Level Guard** — `AdminRoute` component blocks direct URL access to `/stadium/admin` for non-admins
-- **Protected Routes** — All dashboard paths require a valid authenticated session
+| Layer | Implementation |
+|---|---|
+| **Authentication** | Firebase Auth — Email/Password + Google OAuth2 |
+| **Admin Guard** | Exact email whitelist via `VITE_ADMIN_EMAILS` env variable |
+| **Route Protection** | `ProtectedRoute` + `AdminRoute` components block all unauthorized access |
+| **Error Handling** | React `ErrorBoundary` wraps all routes — no blank screen crashes |
+| **Secrets** | All keys via `VITE_*` environment variables — never hardcoded |
+| **HTTP Headers** | nginx: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `X-XSS-Protection` |
 
 ---
 
 ## ⚡ Performance & Efficiency
 
-- **React Lazy + Suspense** — Every page is code-split and loaded on-demand, minimising initial bundle size
-- **Stable Effect Dependencies** — Firebase listeners and simulation intervals are in independent `useEffect` hooks with stable `[isReady]` dependencies, preventing memory leaks and duplicate subscriptions
-- **Throttled Alerts** — Random alert generation runs at ~5% probability per 3-second tick (~45s average interval)
-- **Toast Auto-Dismiss** — All toasts expire and are removed from state after 5 seconds
+| Optimization | Detail |
+|---|---|
+| **React Lazy + Suspense** | All 10 pages code-split, loaded on-demand |
+| **Vite Manual Chunks** | `firebase` / `vendor` / `maps` / `icons` chunks — vendor reduced from 633 kB → 168 kB |
+| **esbuild Minification** | `build.minify: 'esbuild'` with `target: 'esnext'` |
+| **nginx gzip** | Compresses JS, CSS, JSON, SVG in transit |
+| **Asset Caching** | 1-year `Cache-Control: immutable` on all hashed bundles |
+| **Stable Effects** | Firebase listeners and simulation intervals isolated in `[isReady]`-gated effects — no memory leaks |
+| **React.memo** | `AiChatWidget` memoized to prevent re-renders on parent state changes |
+| **Throttled Simulation** | ~5% alert chance per 3s tick (~45s average interval) |
 
 ---
 
-## 🔗 External APIs & Services
+## 🧪 Testing
+
+**88 tests across 6 test files** — all passing.
+
+```bash
+npm run test
+# Test Files  6 passed (6)
+# Tests       88 passed (88)
+# Exit code:  0
+```
+
+| Test File | Coverage |
+|---|---|
+| `chatbotEngine.test.js` | 24 tests — all chatbot routes, edge cases, null inputs, AI fallback behavior |
+| `crowdSimulator.test.js` | 24 tests — zone data, queue data, flow history, activity feed, predictions |
+| `alertEngine.test.js` | 16 tests — alert generation, batch seeding, constants, priority validation |
+| `authContext.test.jsx` | 11 tests — login, register, logout, password reset, friendly error mapping |
+| `firestoreService.test.js` | 12 tests — Firestore reads/writes, silent failure behavior, null guards |
+| `App.test.jsx` | 1 test — component mounts and renders without crash |
+
+---
+
+## 🌐 Google Services Integration
 
 | Service | Usage |
 |---|---|
-| **Open-Meteo API** | Free, open-source real-time weather tracking mapped to the exact stadium GPS coordinates |
-| **Firebase Authentication** | Google OAuth2 Sign-In, Email/Password, Password Reset |
-| **Firebase Analytics** | Page view tracking via `logEvent` |
-| **Cloud Firestore** | Admin panel zone overrides, broadcast alerts, admin email registry |
-| **Leaflet & OpenStreetMap** | Geospatial visualization framework and map tiles |
+| **Google Gemini 2.5 Flash** | AI/ML generative responses for the PulseArena Stadium Assistant |
+| **Firebase Authentication** | Email/Password + Google OAuth2 Sign-In + Password Reset |
+| **Firebase Analytics** | Page view and custom event tracking via `logEvent` + `trackEvent` |
+| **Firebase Performance Monitoring** | Automatic page load tracing + network request monitoring |
+| **Cloud Firestore** | Admin zone overrides, broadcast alerts, user activity logs, venue preferences |
+| **Open-Meteo API** | Real-time weather per stadium GPS coordinates |
+| **Leaflet & OpenStreetMap** | Geospatial map visualization and zone overlays |
+
+---
+
+## ♿ Accessibility
+
+All interactive elements follow WCAG 2.1 AA standards:
+
+- `aria-label` on all buttons, inputs, and icon-only controls
+- `role="navigation"` + `aria-label="Main navigation"` on sidebar nav
+- `aria-current="page"` on active route link
+- `aria-expanded` on mobile menu toggle
+- `role="alert"` on Error Boundary fallback UI
+- `htmlFor` / `id` pairing on all form inputs
+- `aria-label` on `Show/Hide password` toggle
+- Keyboard accessible throughout (all interactive elements are focusable)
 
 ---
 
@@ -70,65 +156,95 @@ PulseArena AI transforms the physical event experience by solving the core probl
 
 | Layer | Technology |
 |---|---|
-| Framework | React 18 + Vite |
+| Framework | React 18 + Vite 6 |
 | Routing | React Router v6 |
 | State | React Context API + `useReducer` |
-| Styling | Vanilla CSS custom design system (Dark Cyber theme) |
+| Styling | Vanilla CSS — custom Dark Cyber design system |
 | Maps | Leaflet.js via `react-leaflet` |
+| Charts | Recharts |
 | Icons | Lucide React |
-| Backend | Google Firebase |
+| AI/ML | Google Gemini 2.5 Flash (`@google/genai`) |
+| Backend | Google Firebase (Auth, Firestore, Analytics, Performance) |
+| Build | Vite with esbuild minification + Rollup code splitting |
+| Testing | Vitest + Testing Library + jsdom |
+| Deployment | Google Cloud Run (Docker + nginx) |
 
 ---
 
 ## 💻 Getting Started
 
 ### Prerequisites
-- Node.js v18+
+- Node.js v20+
 - npm
 
 ### Installation
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone https://github.com/Anuj-yadav-5/Promptwar-project.git
+cd Promptwar-project
+
+# 2. Install dependencies
 npm install
 
-# 2. Configure environment variables
-# Create a .env file in the root with your Firebase project keys:
-VITE_FIREBASE_API_KEY=your_key
-VITE_FIREBASE_AUTH_DOMAIN=your_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+# 3. Configure environment variables
+cp .env.example .env
+# Fill in your Firebase + Gemini API keys (see .env.example)
 
-# 3. Start development server
+# 4. Start development server
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+### Environment Variables
 
-### ☁️ Cloud Deployment
-This project is configured for seamless deployment to both Google Cloud Run and Firebase Hosting.
+```env
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+VITE_ADMIN_EMAILS=admin@yourdomain.com
+VITE_GEMINI_API_KEY=your_gemini_api_key
+```
 
-**Option A: Google Cloud Run (Containerized)**
-1. Ensure the `Dockerfile` and `nginx.conf` are present in the root.
-2. Authenticate with Google Cloud SDK: `gcloud auth login`
-3. Deploy directly from source:
-   ```bash
-   gcloud run deploy promptwar-app --source . --region us-central1 --project pulsearena-ai-493808
-   ```
+### Running Tests
 
-**Option B: Firebase Hosting (Static CDN)**
-For a globally distributed, free CDN with pre-whitelisted OAuth endpoints (`.web.app`):
-1. Build the production React bundle: `npm run build`
-2. Deploy the `dist` folder: `firebase deploy --only hosting`
+```bash
+npm run test          # Run all 88 tests once
+npm run test:watch    # Watch mode during development
+```
+
+---
+
+## ☁️ Cloud Deployment
+
+### Google Cloud Run (Production)
+
+```bash
+# Authenticate
+gcloud auth login
+
+# Deploy from source (Docker build happens in Cloud Build)
+gcloud run deploy promptwar-app \
+  --source . \
+  --region us-central1 \
+  --project pulsearena-ai-493808
+```
+
+### Firebase Hosting (Static CDN alternative)
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
 
 ---
 
 ## 🎨 Design System
 
-The application uses an ultra-premium **Dark Cyber** aesthetic driven entirely by custom Vanilla CSS and interactive glassmorphism components.
+Ultra-premium **Dark Cyber** aesthetic — custom Vanilla CSS with glassmorphism.
 
 | Token | Value |
 |---|---|
@@ -136,8 +252,43 @@ The application uses an ultra-premium **Dark Cyber** aesthetic driven entirely b
 | Primary Accent | Neon Cyan `#00d4ff` |
 | Secondary Accent | Electric Purple `#7b2ff7` |
 | Alert / Action | Hot Pink `#ff2d95` |
+| Success | Electric Green `#00ff88` |
 | Display Font | `Orbitron` (Google Fonts) |
 | Body Font | `Inter` (Google Fonts) |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── AiChatWidget.jsx      # Floating AI chat assistant
+│   ├── ErrorBoundary.jsx     # React error boundary (crash protection)
+│   ├── Layout.jsx            # Global app frame (header, sidebar, toasts)
+│   ├── ProtectedRoute.jsx    # Auth + Admin route guards
+│   └── Sidebar.jsx           # Navigation sidebar with ARIA roles
+├── context/
+│   ├── AuthContext.jsx       # Firebase auth state management
+│   └── CrowdContext.jsx      # Global crowd simulation + Firestore sync
+├── pages/                    # Lazy-loaded route components
+├── services/
+│   ├── alertEngine.js        # Random alert generation with JSDoc
+│   ├── chatbotEngine.js      # Gemini AI + rule-based hybrid engine
+│   ├── crowdSimulator.js     # Real-time crowd data simulation
+│   ├── firebase.js           # Firebase app + Auth + Firestore + Analytics + Performance
+│   └── firestoreService.js   # Firestore CRUD helpers (silent-fail)
+├── tests/
+│   ├── alertEngine.test.js
+│   ├── App.test.jsx
+│   ├── authContext.test.jsx
+│   ├── chatbotEngine.test.js
+│   ├── crowdSimulator.test.js
+│   ├── firestoreService.test.js
+│   └── setup.js
+└── constants/
+    └── venues.js             # 5 international stadium definitions
+```
 
 ---
 

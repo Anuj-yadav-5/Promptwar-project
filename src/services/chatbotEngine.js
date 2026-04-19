@@ -1,5 +1,15 @@
 // Chatbot Engine Service — Context-aware AI assistant for venue queries
+import { GoogleGenAI } from '@google/genai';
 
+let geminiAI = null;
+try {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (apiKey) {
+    geminiAI = new GoogleGenAI({ apiKey });
+  }
+} catch (e) {
+  console.warn("Gemini AI initialization skipped. Missing VITE_GEMINI_API_KEY.");
+}
 const KNOWLEDGE_BASE = {
   greetings: [
     "Hey there! 👋 Welcome to PulseArena AI. I'm your smart stadium assistant. How can I help you today?",
@@ -67,6 +77,13 @@ async function fetchRealWeather(venue) {
   }
 }
 
+/**
+ * Finds the most relevant hardcoded fallback or predefined rule response.
+ * @param {string} input - The user query string.
+ * @param {string|null} userName - The authenticated user's name.
+ * @param {Object|null} activeVenue - The currently selected venue context.
+ * @returns {Promise<string|null>} The formatted response text, or null if no match found.
+ */
 async function findBestResponse(input, userName, activeVenue) {
   const lower = input.toLowerCase();
   
@@ -101,17 +118,48 @@ async function findBestResponse(input, userName, activeVenue) {
   if (/\b(tip|tips|advice|suggest|recommend)\b/i.test(lower)) return KNOWLEDGE_BASE.tips;
 
   // Fallback
-  return KNOWLEDGE_BASE.fallback[Math.floor(Math.random() * KNOWLEDGE_BASE.fallback.length)];
+  return null; // Return null so we can catch and ask Gemini
 }
 
+/**
+ * Retrieves the optimal response to a user query, falling back to Gemini AI if static rules fail.
+ * @param {string} userMessage - The raw message input by the user.
+ * @param {string|null} userName - The user's name for personalization.
+ * @param {Object|null} activeVenue - Venue object for context.
+ * @returns {Promise<string>} The AI or rule-based response string.
+ */
 export async function getChatResponse(userMessage, userName = null, activeVenue = null) {
-  const response = await findBestResponse(userMessage, userName, activeVenue);
-  
-  // Simulate AI thinking time
-  return new Promise((resolve) => {
-    const delay = 300 + Math.random() * 800;
-    setTimeout(() => resolve(response), delay);
-  });
+  // Try rule-based response first
+  const ruleResponse = await findBestResponse(userMessage, userName, activeVenue);
+  if (ruleResponse) {
+    return new Promise((resolve) => {
+      const delay = 300 + Math.random() * 800;
+      setTimeout(() => resolve(ruleResponse), delay);
+    });
+  }
+
+  // If rule didn't hit, try Gemini AI
+  if (geminiAI) {
+    try {
+      const prompt = `You are a helpful, polite stadium assistant named PulseArena AI. 
+      The user is at venue: ${activeVenue ? activeVenue.name : 'Unknown Stadium'}. 
+      User name: ${userName || 'Guest'}.
+      Answer their query concisely in 1-3 sentences.
+      Query: ${userMessage}`;
+      
+      const response = await geminiAI.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+      });
+      return response.text;
+    } catch (e) {
+      console.warn("Gemini API failed, using fallback:", e);
+    }
+  }
+
+  // Absolute fallback
+  const fallback = KNOWLEDGE_BASE.fallback[Math.floor(Math.random() * KNOWLEDGE_BASE.fallback.length)];
+  return new Promise((resolve) => setTimeout(() => resolve(fallback), 500));
 }
 
 export { QUICK_ACTIONS };

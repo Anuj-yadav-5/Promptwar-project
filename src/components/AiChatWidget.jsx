@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { Bot, Send, User, Sparkles, X, MessageSquare } from 'lucide-react';
 import { getChatResponse, QUICK_ACTIONS } from '../services/chatbotEngine';
 import { useAuth } from '../context/AuthContext';
@@ -44,7 +44,7 @@ function TypewriterText({ text, onComplete }) {
   return <div className="text-xs leading-relaxed">{formatText(displayedText)}</div>;
 }
 
-export default function AiChatWidget() {
+const AiChatWidget = memo(function AiChatWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -132,6 +132,7 @@ export default function AiChatWidget() {
             </div>
             <button 
               onClick={() => setIsOpen(false)}
+              aria-label="Close AI Chat"
               className="text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors p-2 rounded-full"
             >
               <X size={18} />
@@ -211,6 +212,7 @@ export default function AiChatWidget() {
                 />
                 <button
                   type="button"
+                  aria-label="Use AI Sparkles"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-neon-cyan transition-colors"
                 >
                   <Sparkles size={16} />
@@ -218,6 +220,7 @@ export default function AiChatWidget() {
               </div>
               <button
                 type="submit"
+                aria-label="Send Message"
                 disabled={!input.trim() || isTyping || botIsTypingOut}
                 className="w-11 h-11 bg-gradient-to-br from-neon-purple to-neon-cyan text-white rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] hover:scale-105 transition-all shrink-0"
               >
@@ -235,6 +238,8 @@ export default function AiChatWidget() {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle AI Assistant"
+        aria-expanded={isOpen}
         className="w-16 h-16 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan text-white shadow-[0_0_25px_rgba(123,47,247,0.5)] flex items-center justify-center hover:scale-110 hover:shadow-[0_0_35px_rgba(0,212,255,0.6)] transition-all duration-300 relative group overflow-hidden border-2 border-navy-900 z-50"
       >
         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -248,4 +253,6 @@ export default function AiChatWidget() {
       </button>
     </div>
   );
-}
+});
+
+export default AiChatWidget;
