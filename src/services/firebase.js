@@ -24,10 +24,36 @@ const firebaseConfig = {
 };
 
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getDatabase } from 'firebase/database';
 
 const app = initializeApp(firebaseConfig);
 export { app };
 
+// Initialize Service 4: Firebase Storage
+export const storage = getStorage(app);
+
+// Initialize Service 5: Firebase Realtime Database
+export const rtdb = getDatabase(app);
+
+// Initialize Service 6: Firebase Cloud Messaging
+export let messaging = null;
+if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+  try {
+    // Only initialize messaging if not in a test environment to prevent jsdom crashes
+    if (process.env.NODE_ENV !== 'test') {
+      import('firebase/messaging').then(({ getMessaging, isSupported }) => {
+        isSupported().then(supported => {
+          if (supported) {
+            messaging = getMessaging(app);
+          }
+        }).catch(() => {});
+      }).catch(() => {});
+    }
+  } catch (e) {
+    // Ignore messaging initialization errors
+  }
+}
 
 // Wrap analytics in try-catch — if measurementId is missing/invalid it throws
 // synchronously before React mounts, causing a completely blank page.

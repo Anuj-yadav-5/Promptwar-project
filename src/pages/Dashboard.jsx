@@ -164,6 +164,65 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Google Ecosystem Integrations Widget Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-6 border-t border-white/10">
+        
+        {/* Service 8: YouTube Embed API */}
+        <div className="glass-panel p-4 h-64 flex flex-col">
+          <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider flex items-center justify-between">
+            Live Stadium Feed
+            <span className="bg-neon-red text-white text-[10px] px-2 py-0.5 rounded animate-pulse">LIVE</span>
+          </h2>
+          <div className="flex-1 rounded-lg overflow-hidden bg-black/50 border border-white/5 relative">
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&controls=0&playlist=jfKfPfyJRdk" 
+              title="YouTube Live Feed" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+              className="absolute inset-0 pointer-events-none opacity-80 mix-blend-screen"
+            ></iframe>
+          </div>
+        </div>
+
+        {/* Service 9: Google Maps Embed API */}
+        <div className="glass-panel p-4 h-64 flex flex-col">
+          <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider text-neon-cyan">External Traffic (Google Maps)</h2>
+          <div className="flex-1 rounded-lg overflow-hidden bg-navy-900 border border-white/5 relative opacity-80 hover:opacity-100 transition-opacity">
+            <iframe 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyFakeKey'}&q=Wankhede+Stadium,Mumbai&zoom=14&maptype=roadmap`}
+            ></iframe>
+            {/* Overlay to prevent accidental scrolling inside dashboard */}
+            <div className="absolute inset-0 bg-transparent hover:bg-transparent pointer-events-auto"></div>
+          </div>
+        </div>
+
+        {/* Service 10: Google Calendar embed */}
+        <div className="glass-panel p-4 h-64 flex flex-col">
+          <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider text-neon-green">Upcoming Events (Google Calendar)</h2>
+          <div className="flex-1 rounded-lg overflow-hidden bg-white/5 border border-white/5">
+            <iframe 
+              src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%230A1128&ctz=Asia%2FKolkata&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&mode=AGENDA&src=ZW4uaW5kaWFuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%230B8043" 
+              style={{ borderWidth: 0 }} 
+              width="100%" 
+              height="100%" 
+              frameBorder="0" 
+              scrolling="no"
+              className="opacity-90 blend-screen filter invert hue-rotate-[180deg]"
+            ></iframe>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

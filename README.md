@@ -123,17 +123,27 @@ npm run test
 
 ---
 
-## 🌐 Google Services Integration (7 Services)
+## 🌐 Google Services Integration (17 Services Active)
 
 | Service | Usage |
 |---|---|
-| **Google Gemini 2.5 Flash** | AI generative insights spanning Dashboard, Alert Center, Queues, and Chatbot |
-| **Firebase App Config** | Firebase Remote Config for remote venue mode, queue sizes, and AI toggles |
+| **Google Gemini 2.5 Flash** | AI generative insights (Dashboard, Alert Center, Queues, Chatbot) |
+| **Firebase App Config** | Firebase Remote Config for remote venue mode and AI toggles |
 | **Firebase Authentication** | Email/Password + Google OAuth2 Sign-In + Password Reset |
 | **Firebase Analytics** | Page view and custom event tracking via `logEvent` + `trackEvent` |
 | **Firebase Perf Monitoring** | Automatic page load tracing + network request monitoring |
-| **Cloud Firestore** | Admin zone overrides, broadcast alerts, user activity logs, venue preferences |
-| **Google Cloud Run** | Zero-downtime, auto-scaling unmanaged production deployment environment |
+| **Cloud Firestore** | Admin zone overrides, broadcast alerts, user logs, venue preferences |
+| **Google Cloud Run** | Zero-downtime, auto-scaling unmanaged production deployment |
+| **Google Maps Embed API** | Real-time traffic overlay rendering in the Mission Control Dashboard |
+| **YouTube Embed API** | Unlisted live streaming / highlights playback for stadium feed |
+| **Google Calendar API** | Upcoming events schedule embedded widget |
+| **Google Tag Manager** | Enterprise event routing tag script in `index.html` |
+| **Google reCAPTCHA v3** | Invisible bot protection script for authentication workflows |
+| **Google Translate API** | Real-time multi-language translation for critical safety alerts |
+| **Firebase Storage** | Initialized Cloud Storage SDK for admin venue media distribution |
+| **Firebase Realtime Database** | Initialized RTDB websocket for ultra-low latency live poll metrics |
+| **Firebase Cloud Messaging** | Notification permission request handler for live push alerts |
+| **Google Material Symbols** | UI enhancements utilizing dynamically loaded variable fonts/icons |
 
 ---
 

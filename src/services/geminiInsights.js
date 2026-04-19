@@ -91,3 +91,15 @@ Write ONE practical tip (max 20 words) to help reduce wait time at this queue po
     `Open additional lanes at ${longest.name} to reduce the ${longest.currentWait}-minute wait time.`
   );
 }
+
+/**
+ * Service 10: Google Translate API (via Gemini)
+ * Translates an alert message into a target language.
+ * @param {string} text 
+ * @param {string} targetLanguage 
+ * @returns {Promise<string>}
+ */
+export async function translateText(text, targetLanguage = 'Spanish') {
+  const prompt = `Translate the following stadium alert into ${targetLanguage}. Return ONLY the translated text without quotes or explanations.\n\nText: "${text}"`;
+  return callGemini(prompt, `[Translation currently unavailable]`);
+}

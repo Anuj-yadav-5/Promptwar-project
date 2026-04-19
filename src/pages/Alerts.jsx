@@ -1,13 +1,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { Bell, AlertTriangle, AlertCircle, Info, CheckCircle2, SlidersHorizontal, Sparkles, Volume2, Globe } from 'lucide-react';
 import { useCrowd } from '../context/CrowdContext';
-import { generateAlertRecommendation } from '../services/geminiInsights';
+import { generateAlertRecommendation, translateText } from '../services/geminiInsights';
+import { messaging } from '../services/firebase';
+import { getToken } from 'firebase/messaging';
 
 export default function Alerts() {
   const { state, dispatch } = useCrowd();
   const [filter, setFilter] = useState('all');
   // Cache of AI recommendations keyed by alert.id
   const [aiRecs, setAiRecs] = useState({});
+  // Cache of translated alerts
+  const [translations, setTranslations] = useState({});
+  const [fcmStatus, setFcmStatus] = useState('Enable Push Notifications');
+
+  const enableFCM = async () => {
+    if (!messaging) return setFcmStatus('Push Not Supported');
+    try {
+      setFcmStatus('Requesting...');
+      const token = await getToken(messaging, { vapidKey: 'BM_YOUR_PUBLIC_VAPID_KEY_MOCK' });
+      if (token) setFcmStatus('Push Enabled');
+      else setFcmStatus('Push Blocked');
+    } catch {
+      setFcmStatus('Push Permissions Denied');
+    }
+  };
+
+  const handleTranslate = async (alert) => {
+    if (translations[alert.id]) return;
+    const translated = await translateText(alert.message, 'Spanish');
+    setTranslations(prev => ({ ...prev, [alert.id]: translated }));
+  };
 
   const handleMarkAllRead = () => {
     dispatch({ type: 'MARK_ALL_ALERTS_READ' });
@@ -49,13 +72,23 @@ export default function Alerts() {
           <p className="text-slate-400">Real-time notifications and system advisories.</p>
         </div>
         
-        <button 
-          onClick={handleMarkAllRead}
-          disabled={state.activeAlerts === 0}
-          className="text-sm font-medium text-slate-400 hover:text-white transition-colors disabled:opacity-50 flex items-center gap-2"
-        >
-          <CheckCircle2 size={16} /> Mark all as read
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={enableFCM}
+            disabled={fcmStatus !== 'Enable Push Notifications'}
+            className="hidden sm:flex text-sm text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/5 items-center gap-2"
+          >
+            <Volume2 size={16} />
+            {fcmStatus}
+          </button>
+          <button 
+            onClick={handleMarkAllRead}
+            disabled={state.activeAlerts === 0}
+            className="text-sm font-bold text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Mark all read
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 mb-6 border-b border-slate-700/50 pb-4">
@@ -102,6 +135,11 @@ export default function Alerts() {
                 </div>
                 
                 <p className="text-sm text-slate-400">{alert.message}</p>
+                {translations[alert.id] && (
+                  <p className="text-sm text-slate-300 mt-1 italic pl-2 border-l-2 border-slate-600 bg-white/5 py-1">
+                    🇪🇸 {translations[alert.id]}
+                  </p>
+                )}
 
                 {/* Gemini AI Recommendation for high-priority alerts */}
                 {(alert.priority === 'critical' || alert.priority === 'warning') && !alert.read && (
@@ -119,12 +157,22 @@ export default function Alerts() {
                 )}
                 
                 {!alert.read && (
-                  <button 
-                    onClick={() => handleMarkRead(alert.id)}
-                    className="mt-3 text-xs font-bold uppercase tracking-wider text-neon-cyan hover:text-white transition-colors"
-                  >
-                    Dismiss
-                  </button>
+                  <div className="flex items-center gap-4 mt-3">
+                    <button 
+                      onClick={() => handleMarkRead(alert.id)}
+                      className="text-xs font-bold uppercase tracking-wider text-neon-cyan hover:text-white transition-colors"
+                    >
+                      Dismiss
+                    </button>
+                    {!translations[alert.id] && (
+                      <button 
+                        onClick={() => handleTranslate(alert)}
+                        className="text-xs font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1"
+                      >
+                        <Globe size={12} /> Translate
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
