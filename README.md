@@ -108,6 +108,22 @@ npm run dev
 
 Open `http://localhost:5173` in your browser.
 
+### ☁️ Cloud Deployment
+This project is configured for seamless deployment to both Google Cloud Run and Firebase Hosting.
+
+**Option A: Google Cloud Run (Containerized)**
+1. Ensure the `Dockerfile` and `nginx.conf` are present in the root.
+2. Authenticate with Google Cloud SDK: `gcloud auth login`
+3. Deploy directly from source:
+   ```bash
+   gcloud run deploy promptwar-app --source . --region us-central1 --project pulsearena-ai-493808
+   ```
+
+**Option B: Firebase Hosting (Static CDN)**
+For a globally distributed, free CDN with pre-whitelisted OAuth endpoints (`.web.app`):
+1. Build the production React bundle: `npm run build`
+2. Deploy the `dist` folder: `firebase deploy --only hosting`
+
 ---
 
 ## 🎨 Design System

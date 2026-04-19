@@ -25,12 +25,23 @@ const firebaseConfig = {
 import { getFirestore } from 'firebase/firestore';
 
 const app = initializeApp(firebaseConfig);
-export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
+
+// Wrap analytics in try-catch — if measurementId is missing/invalid it throws
+// synchronously before React mounts, causing a completely blank page.
+export const analytics = (() => {
+  try {
+    return typeof window !== 'undefined' && firebaseConfig.measurementId
+      ? getAnalytics(app)
+      : null;
+  } catch (e) {
+    console.warn('[PulseArena] Analytics disabled:', e.message);
+    return null;
+  }
+})();
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
-
-googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

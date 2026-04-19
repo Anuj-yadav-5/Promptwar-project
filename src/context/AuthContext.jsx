@@ -110,7 +110,7 @@ function friendlyError(code) {
     'auth/too-many-requests': 'Too many attempts. Please try again later.',
     'auth/missing-email': 'Please enter your email address to reset password.',
   };
-  return map[code] || 'Something went wrong. Please try again.';
+  return map[code] || `Something went wrong (${code}). Please try again.`;
 }
 
 export function useAuth() {
