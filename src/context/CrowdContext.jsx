@@ -5,6 +5,8 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { generateInitialAlerts, generateAlert } from '../services/alertEngine';
 import { VENUES } from '../constants/venues';
 import { logUserAction, saveUserVenuePreference } from '../services/firestoreService';
+import { syncRemoteConfig } from '../services/remoteConfigService';
+
 
 const CrowdContext = createContext();
 
@@ -131,6 +133,9 @@ export function CrowdProvider({ children }) {
 
   // Initialize data
   useEffect(() => {
+    // Sync Firebase Remote Config feature flags (non-blocking)
+    syncRemoteConfig().catch(() => {});
+
     // Generate initial dynamic frame based on mock locations
     const zones = generateZoneData();
     const queues = generateQueueData();
@@ -152,6 +157,7 @@ export function CrowdProvider({ children }) {
     });
     setIsReady(true);
   }, []);
+
 
   const addToast = useCallback((toast) => {
     const toastId = Date.now();

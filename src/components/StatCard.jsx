@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+
 
 const glowMap = {
   cyan: 'stat-glow-cyan',
@@ -53,3 +55,22 @@ export default function StatCard({ icon: Icon, label, value, unit, trend, trendV
     </div>
   );
 }
+
+StatCard.propTypes = {
+  /** Lucide icon component to render */
+  icon: PropTypes.elementType.isRequired,
+  /** Label text below the value */
+  label: PropTypes.string.isRequired,
+  /** Primary metric value */
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  /** Optional unit appended after value (e.g., "min", "/100") */
+  unit: PropTypes.string,
+  /** Trend direction indicator */
+  trend: PropTypes.oneOf(['up', 'down']),
+  /** Trend label (e.g., "+5") */
+  trendValue: PropTypes.string,
+  /** Color palette key */
+  color: PropTypes.oneOf(['cyan', 'purple', 'pink', 'green']),
+  /** Animation delay in milliseconds */
+  delay: PropTypes.number,
+};

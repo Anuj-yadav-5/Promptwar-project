@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
-import { Clock, Users, ArrowRight, CheckCircle2, Ticket } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Clock, Users, ArrowRight, CheckCircle2, Ticket, Sparkles } from 'lucide-react';
 import { useCrowd } from '../context/CrowdContext';
 import Modal from '../components/Modal';
+import { generateQueueTip } from '../services/geminiInsights';
 
 export default function QueueSystem() {
   const { state, dispatch, addToast } = useCrowd();
   const [filter, setFilter] = useState('all');
   const [selectedQueue, setSelectedQueue] = useState(null);
+  const [queueTip, setQueueTip] = useState('');
+
+  // Fetch Gemini AI queue optimization tip once queues are loaded
+  useEffect(() => {
+    if (!state.queues?.length) return;
+    generateQueueTip(state.queues).then(tip => setQueueTip(tip));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Once on mount — tips don't need to refresh constantly
 
   const categories = [
     { id: 'all', label: 'All Queues' },
@@ -45,6 +54,17 @@ export default function QueueSystem() {
         <h1 className="text-3xl font-display font-bold text-white mb-2">Smart Queues</h1>
         <p className="text-slate-400">Join virtual queues and avoid waiting in physical lines.</p>
       </div>
+
+      {/* Gemini AI Queue Optimization Tip */}
+      {queueTip && (
+        <div className="glass-panel p-4 border-neon-cyan/20 bg-neon-cyan/5 flex items-start gap-3" role="note" aria-label="Gemini AI queue tip">
+          <Sparkles size={16} className="text-neon-cyan mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-neon-cyan mb-1">Gemini AI Queue Tip</p>
+            <p className="text-sm text-slate-200">{queueTip}</p>
+          </div>
+        </div>
+      )}
 
       {/* Active User Queues */}
       {state.userQueues.length > 0 && (

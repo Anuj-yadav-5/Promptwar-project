@@ -26,6 +26,8 @@ const firebaseConfig = {
 import { getFirestore } from 'firebase/firestore';
 
 const app = initializeApp(firebaseConfig);
+export { app };
+
 
 // Wrap analytics in try-catch — if measurementId is missing/invalid it throws
 // synchronously before React mounts, causing a completely blank page.

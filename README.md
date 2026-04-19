@@ -44,31 +44,28 @@ Built for high-capacity operations across global venues including **Narendra Mod
 | ⏱️ **Live Operations Clock** | Precision synchronized digital clock embedded in the global UI header |
 | 🔍 **Predictive Global Search** | Instant cross-dashboard search: venues, zones, features, and AI queries |
 | 🧭 **Smart Navigation** | Crowd-aware routing with side-by-side path comparisons and time savings |
-| 🚨 **Alert Center** | Centralized hub for crowd, safety, weather, and system notifications |
+| 🚨 **Alert Center** | Centralized hub for crowd, safety, weather, and system notifications with AI recommendations |
 | 🤖 **AI Assistant** | Gemini 2.5 Flash powered chatbot with rule-based fast paths + AI fallback |
 | 🔧 **Admin Console** | Admin-only panel with live Firebase Firestore zone override controls |
 
 ---
 
-## 🤖 AI Integration
+## 🤖 AI Integration (4 Workflows)
 
 ### Google Gemini 2.5 Flash
-The PulseArena AI Assistant uses a **dual-mode response engine**:
+The PulseArena AI integrates Gemini into **4 distinct application workflows**:
 
-1. **Rule-Based Fast Path** — Instant responses for common queries (directions, wait times, food, exits, medical, parking, VIP, merchandise, event schedule)
-2. **Gemini AI Fallback** — For all other queries, calls `gemini-2.5-flash` via the `@google/genai` SDK to generate contextual, stadium-aware responses
+1. **Dashboard Insights** — Auto-analyzes complex crowd flow and outputs a single 20-word operational tip.
+2. **Alert Recommendations** — Provides priority-based action items for active crowd anomalies.
+3. **Smart Queues** — Infers the longest queue and outputs dynamic optimization tips for venue staff.
+4. **Chatbot Fallback** — Advanced generative Q&A for queries failing the rule-based rapid-response path.
 
 ```js
-// chatbotEngine.js — simplified flow
-const ruleResponse = findBestResponse(input, userName, activeVenue);
-if (ruleResponse) return ruleResponse;
-
-// Fallback to Gemini AI
-const aiResponse = await geminiAI.models.generateContent({
-  model: 'gemini-2.5-flash',
-  contents: `Stadium assistant context: ${buildSystemPrompt(userName, activeVenue)}\n\nUser: ${input}`
-});
-return aiResponse.text;
+// geminiInsights.js — unified service
+const ai = new GoogleGenAI({ apiKey: API_KEY });
+export async function generateCrowdInsight(crowdData) { /* ... */ }
+export async function generateAlertRecommendation(alert) { /* ... */ }
+export async function generateQueueTip(queues) { /* ... */ }
 ```
 
 ---
@@ -86,12 +83,13 @@ return aiResponse.text;
 
 ---
 
-## ⚡ Performance & Efficiency
+## ⚡ Performance, Code Quality, & Efficiency
 
 | Optimization | Detail |
 |---|---|
 | **React Lazy + Suspense** | All 10 pages code-split, loaded on-demand |
 | **Vite Manual Chunks** | `firebase` / `vendor` / `maps` / `icons` chunks — vendor reduced from 633 kB → 168 kB |
+| **PropTypes & Hooks** | `PropTypes` validation on all shared UI components + custom `useCrowd`/`useAuth` hooks |
 | **esbuild Minification** | `build.minify: 'esbuild'` with `target: 'esnext'` |
 | **nginx gzip** | Compresses JS, CSS, JSON, SVG in transit |
 | **Asset Caching** | 1-year `Cache-Control: immutable` on all hashed bundles |
@@ -103,12 +101,12 @@ return aiResponse.text;
 
 ## 🧪 Testing
 
-**88 tests across 6 test files** — all passing.
+**105 tests across 8 test files** — all passing.
 
 ```bash
 npm run test
-# Test Files  6 passed (6)
-# Tests       88 passed (88)
+# Test Files  8 passed (8)
+# Tests       105 passed (105)
 # Exit code:  0
 ```
 
@@ -117,23 +115,25 @@ npm run test
 | `chatbotEngine.test.js` | 24 tests — all chatbot routes, edge cases, null inputs, AI fallback behavior |
 | `crowdSimulator.test.js` | 24 tests — zone data, queue data, flow history, activity feed, predictions |
 | `alertEngine.test.js` | 16 tests — alert generation, batch seeding, constants, priority validation |
-| `authContext.test.jsx` | 11 tests — login, register, logout, password reset, friendly error mapping |
 | `firestoreService.test.js` | 12 tests — Firestore reads/writes, silent failure behavior, null guards |
+| `authContext.test.jsx` | 11 tests — login, register, logout, password reset, friendly error mapping |
+| `remoteConfigService.test.js`| 9 tests — Firebase Remote Config sync, boolean/number/string reads, defaults |
+| `geminiInsights.test.js` | 8 tests — Dashboard, Alert, and Queue Gemini workflows including missing keys/fallbacks |
 | `App.test.jsx` | 1 test — component mounts and renders without crash |
 
 ---
 
-## 🌐 Google Services Integration
+## 🌐 Google Services Integration (7 Services)
 
 | Service | Usage |
 |---|---|
-| **Google Gemini 2.5 Flash** | AI/ML generative responses for the PulseArena Stadium Assistant |
+| **Google Gemini 2.5 Flash** | AI generative insights spanning Dashboard, Alert Center, Queues, and Chatbot |
+| **Firebase App Config** | Firebase Remote Config for remote venue mode, queue sizes, and AI toggles |
 | **Firebase Authentication** | Email/Password + Google OAuth2 Sign-In + Password Reset |
 | **Firebase Analytics** | Page view and custom event tracking via `logEvent` + `trackEvent` |
-| **Firebase Performance Monitoring** | Automatic page load tracing + network request monitoring |
+| **Firebase Perf Monitoring** | Automatic page load tracing + network request monitoring |
 | **Cloud Firestore** | Admin zone overrides, broadcast alerts, user activity logs, venue preferences |
-| **Open-Meteo API** | Real-time weather per stadium GPS coordinates |
-| **Leaflet & OpenStreetMap** | Geospatial map visualization and zone overlays |
+| **Google Cloud Run** | Zero-downtime, auto-scaling unmanaged production deployment environment |
 
 ---
 

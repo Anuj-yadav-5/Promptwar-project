@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Map as MapIcon, Users, Navigation2, Bell, Bot, ChevronRight, LogOut, User as UserIcon, Settings, Lock, Unlock } from 'lucide-react';
 import { useCrowd } from '../context/CrowdContext';

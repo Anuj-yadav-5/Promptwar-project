@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const statusConfig = {
   low: { bg: 'bg-neon-green/20', text: 'text-neon-green', border: 'border-neon-green/30', label: 'Low' },
@@ -19,3 +20,10 @@ export default function DensityBadge({ status, size = 'sm' }) {
     </span>
   );
 }
+
+DensityBadge.propTypes = {
+  /** Density status level */
+  status: PropTypes.oneOf(['low', 'moderate', 'high', 'critical']).isRequired,
+  /** Badge size variant */
+  size: PropTypes.oneOf(['sm', 'lg']),
+};

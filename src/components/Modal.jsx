@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 
 export default function Modal({ isOpen, onClose, title, children }) {
@@ -11,6 +12,9 @@ export default function Modal({ isOpen, onClose, title, children }) {
       
       {/* Content */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         className="relative glass-panel neon-border p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
@@ -18,6 +22,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
           <h3 className="text-lg font-display font-bold text-white">{title}</h3>
           <button
             onClick={onClose}
+            aria-label="Close dialog"
             className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
           >
             <X size={18} />
@@ -28,3 +33,15 @@ export default function Modal({ isOpen, onClose, title, children }) {
     </div>
   );
 }
+
+Modal.propTypes = {
+  /** Whether the modal is visible */
+  isOpen: PropTypes.bool.isRequired,
+  /** Callback fired when the modal should close */
+  onClose: PropTypes.func.isRequired,
+  /** Title shown in the modal header */
+  title: PropTypes.string.isRequired,
+  /** Modal body content */
+  children: PropTypes.node,
+};
+
