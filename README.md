@@ -12,7 +12,7 @@
 
 **AI-driven real-time crowd management and venue operations dashboard for large-scale sporting events.**
 
-🔗 **Live Demo:** [https://promptwar-app-52090498784.us-central1.run.app](https://promptwar-app-52090498784.us-central1.run.app)
+🔗 **Live Demo:** [https://promptwar-app-cg2sihaoha-uc.a.run.app](https://promptwar-app-cg2sihaoha-uc.a.run.app)
 
 </div>
 
