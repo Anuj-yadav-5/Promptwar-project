@@ -118,7 +118,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <div className="flex items-center justify-between p-3 rounded-xl bg-navy-800 border border-slate-700/50">
               <div className="flex items-center gap-3 overflow-hidden">
                 {user.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full object-cover border border-slate-600" />
+                  <img 
+                    src={user.avatar} 
+                    alt={user.name} 
+                    className="w-9 h-9 rounded-full object-cover border border-slate-600 shrink-0" 
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.outerHTML = `<div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center shrink-0 border border-slate-600 text-white font-bold text-sm z-10">${user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+                    }}
+                  />
                 ) : (
                   <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
                     <UserIcon size={16} className="text-slate-400" />

@@ -9,13 +9,36 @@ export default function Alerts() {
   const { state, dispatch } = useCrowd();
   const [filter, setFilter] = useState('all');
   const [aiRecs, setAiRecs] = useState({});
-  const [fcmStatus, setFcmStatus] = useState('Enable Push Notifications');
+  const [fcmStatus, setFcmStatus] = useState(() => {
+    if (!('Notification' in window)) return 'Not Supported';
+    if (Notification.permission === 'granted') return 'Push Enabled ✓';
+    if (Notification.permission === 'denied') return 'Push Blocked';
+    return 'Enable Push Notifications';
+  });
 
-  // FCM Setup
+  // Send a real browser push notification for critical alerts
+  useEffect(() => {
+    if (Notification.permission !== 'granted') return;
+    const criticalUnread = state.alerts.filter(a => a.priority === 'critical' && !a.read);
+    if (criticalUnread.length === 0) return;
+    const latest = criticalUnread[0];
+    // Only notify for very recent alerts (within last 5 seconds)
+    const isRecent = Date.now() - (latest._ts || 0) < 5000;
+    if (!isRecent) return;
+    try {
+      new Notification('PulseArena ⚠️ Critical Alert', {
+        body: latest.message || latest.title,
+        icon: '/favicon.svg',
+      });
+    } catch {
+      // Silently ignore if notifications fail in this context
+    }
+  }, [state.alerts]);
+
+  // FCM foreground message listener
   useEffect(() => {
     if (!messaging) return;
     const unsubscribe = onMessage(messaging, (payload) => {
-      console.log('FCM Foreground Message:', payload);
       dispatch({
         type: 'ADD_ALERT',
         payload: {
@@ -31,20 +54,22 @@ export default function Alerts() {
   }, [dispatch]);
 
   const enableFCM = async () => {
-    if (!messaging) return setFcmStatus('Push Not Supported');
+    if (!('Notification' in window)) return setFcmStatus('Not Supported');
+    if (Notification.permission === 'granted') return setFcmStatus('Push Enabled ✓');
     try {
-      setFcmStatus('Requesting Token...');
-      // Note: Use actual valid VAPID key in production
-      const token = await getToken(messaging, { vapidKey: 'BM_YOUR_PUBLIC_VAPID_KEY_MOCK' }).catch(() => "mock-token-for-demo");
-      
-      if (token) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
         setFcmStatus('Push Enabled ✓');
-        // Dispatch a welcome push notification locally
+        // Confirm with a welcome notification
+        new Notification('PulseArena 🔔 Notifications Active', {
+          body: 'You will now receive critical stadium alerts in real-time.',
+          icon: '/favicon.svg',
+        });
         dispatch({
           type: 'ADD_ALERT',
           payload: {
             id: `sys-${Date.now()}`,
-            message: 'Firebase Cloud Messaging connected. You will now receive critical broadcast alerts.',
+            message: 'Browser push notifications enabled. Critical alerts will be sent directly to your device.',
             priority: 'info',
             time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
             read: false
@@ -54,7 +79,7 @@ export default function Alerts() {
         setFcmStatus('Push Blocked');
       }
     } catch {
-      setFcmStatus('Push Permissions Denied');
+      setFcmStatus('Push Blocked');
     }
   };
 

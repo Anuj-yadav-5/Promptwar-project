@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Menu, Search, User, LogOut, Settings, ChevronDown, X, Mail, KeyRound, CheckCircle, MapPin, Clock } from 'lucide-react';
+import { Menu, Search, User, LogOut, Settings, ChevronDown, X, Mail, KeyRound, CheckCircle, MapPin, Clock, Globe } from 'lucide-react';
 import Sidebar from './Sidebar';
 import ToastNotification from './ToastNotification';
 import AiChatWidget from './AiChatWidget';
@@ -18,12 +18,60 @@ export default function Layout() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [isTranslateOpen, setIsTranslateOpen] = useState(false);
+  const [langSearch, setLangSearch] = useState('');
+  
+  // Initialize active language from the Google Translate cookie if it exists
+  const [activeLang, setActiveLang] = useState(() => {
+    const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]*)/);
+    if (match && match[1] && match[1] !== '/en/en') {
+      const code = match[1].split('/').pop();
+      // We'll define LANGUAGES further down, but for initial state we can do a quick lookup
+      const savedLangCode = code;
+      return { code: savedLangCode, initialized: false }; // We'll patch this right after LANGUAGES is defined
+    }
+    return { code: 'en', label: 'English', iso: 'EN', color: '#3b82f6', initialized: true };
+  });
+  const translateRef = useRef(null);
   const { state, dispatch } = useCrowd();
   const { user, logout, resetPassword } = useAuth();
   const navigate = useNavigate();
   const profileRef = useRef(null);
   const venueRef = useRef(null);
   const searchRef = useRef(null);
+
+  // Popular languages with color-coded ISO badges (flag emojis don't render on Windows)
+  const LANGUAGES = [
+    { code: 'en',    label: 'English',    iso: 'EN',  color: '#3b82f6' },
+    { code: 'hi',    label: 'हिन्दी',      iso: 'HI',  color: '#f97316' },
+    { code: 'es',    label: 'Español',    iso: 'ES',  color: '#ef4444' },
+    { code: 'fr',    label: 'Français',   iso: 'FR',  color: '#6366f1' },
+    { code: 'de',    label: 'Deutsch',    iso: 'DE',  color: '#eab308' },
+    { code: 'zh-CN', label: '中文',       iso: 'ZH',  color: '#dc2626' },
+    { code: 'ar',    label: 'العربية',   iso: 'AR',  color: '#22c55e' },
+    { code: 'pt',    label: 'Português',  iso: 'PT',  color: '#10b981' },
+    { code: 'ru',    label: 'Русский',    iso: 'RU',  color: '#3b82f6' },
+    { code: 'ja',    label: '日本語',      iso: 'JA',  color: '#ec4899' },
+    { code: 'ko',    label: '한국어',      iso: 'KO',  color: '#8b5cf6' },
+    { code: 'it',    label: 'Italiano',   iso: 'IT',  color: '#14b8a6' },
+    { code: 'ta',    label: 'தமிழ்',      iso: 'TA',  color: '#f97316' },
+    { code: 'te',    label: 'తెలుగు',     iso: 'TE',  color: '#f59e0b' },
+    { code: 'bn',    label: 'বাংলা',      iso: 'BN',  color: '#06b6d4' },
+    { code: 'mr',    label: 'मराठी',      iso: 'MR',  color: '#f97316' },
+    { code: 'gu',    label: 'ગુજરાતી',    iso: 'GU',  color: '#a855f7' },
+    { code: 'pa',    label: 'ਪੰਜਾਬੀ',     iso: 'PA',  color: '#84cc16' },
+    { code: 'ur',    label: 'اردو',       iso: 'UR',  color: '#10b981' },
+    { code: 'nl',    label: 'Nederlands', iso: 'NL',  color: '#f87171' },
+  ];
+
+  // Complete the initialization of activeLang if it was read from cookie
+  useEffect(() => {
+    if (activeLang.initialized === false) {
+      const fullLang = LANGUAGES.find(l => l.code === activeLang.code);
+      if (fullLang) setActiveLang({ ...fullLang, initialized: true });
+      else setActiveLang({ code: 'en', label: 'English', iso: 'EN', color: '#3b82f6', initialized: true });
+    }
+  }, [activeLang.initialized, activeLang.code]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -36,17 +84,80 @@ export default function Layout() {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsSearchOpen(false);
       }
+      if (translateRef.current && !translateRef.current.contains(event.target)) {
+        setIsTranslateOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     
     // Live Clock Interval
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    
+
+    // Inject Google Translate script and hide its default widget with CSS
+    if (!document.getElementById('google-translate-script')) {
+      // Hide the default Google Translate bar and widget via CSS
+      const style = document.createElement('style');
+      style.id = 'google-translate-hide';
+      style.textContent = `
+        /* Hide the Google Translate bar */
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        .goog-te-banner-frame { display: none !important; }
+        /* Prevent layout shift caused by the banner */
+        body { top: 0px !important; margin-top: 0px !important; position: relative !important; }
+        html { top: 0px !important; margin-top: 0px !important; }
+        /* Hide tooltips and default widgets */
+        #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+        #google_translate_element { display: none !important; }
+      `;
+      document.head.appendChild(style);
+
+      window.googleTranslateElementInit = () => {
+        new window.google.translate.TranslateElement(
+          { 
+            pageLanguage: 'en', 
+            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE 
+          },
+          'google_translate_element'
+        );
+      };
+      const script = document.createElement('script');
+      script.id = 'google-translate-script';
+      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       clearInterval(timer);
     };
   }, []);
+
+  // Change language via the robust cookie + reload mechanism
+  const selectLanguage = (lang) => {
+    setActiveLang({ ...lang, initialized: true });
+    setIsTranslateOpen(false);
+    setLangSearch('');
+
+    // Clear existing translation cookies to prevent conflicts
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
+
+    // Set new translation cookie if not English
+    if (lang.code !== 'en') {
+      const val = `/en/${lang.code}`;
+      document.cookie = `googtrans=${val}; path=/;`;
+      // For local dev, hostname is 'localhost'. Modern browsers reject domain=localhost for cookies.
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        document.cookie = `googtrans=${val}; path=/; domain=${window.location.hostname};`;
+        document.cookie = `googtrans=${val}; path=/; domain=.${window.location.hostname};`;
+      }
+    }
+
+    // Reload the page to apply the translation natively
+    window.location.reload();
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -186,6 +297,83 @@ export default function Layout() {
               </span>
             </div>
 
+            {/* ── Google Translate: Custom Language Selector ─────────────── */}
+            <div className="relative" ref={translateRef}>
+              <button
+                onClick={() => { setIsTranslateOpen(v => !v); setLangSearch(''); }}
+                title="Translate this page"
+                aria-label="Open language selector"
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-300 text-sm font-semibold ${
+                  isTranslateOpen
+                    ? 'bg-neon-cyan/20 border-neon-cyan text-neon-cyan'
+                    : 'bg-navy-800/50 border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-500'
+                }`}
+              >
+                {/* ISO badge instead of flag emoji (Windows doesn't render flag emojis) */}
+                <span
+                  className="text-[10px] font-black rounded px-1.5 py-0.5 leading-none"
+                  style={{ backgroundColor: `${activeLang.color}25`, color: activeLang.color, border: `1px solid ${activeLang.color}50` }}
+                >
+                  {activeLang.iso}
+                </span>
+                <span className="hidden lg:block">{activeLang.label}</span>
+                <ChevronDown size={12} className={`transition-transform duration-300 ${isTranslateOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isTranslateOpen && (
+                <div className="absolute right-0 top-full mt-2 w-56 glass-panel border border-neon-cyan/20 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] overflow-hidden animate-fade-in z-50">
+                  {/* Header */}
+                  <div className="px-3 pt-3 pb-2 border-b border-white/10">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-neon-cyan mb-2 flex items-center gap-1.5">
+                      <Globe size={10} /> Select Language
+                    </p>
+                    {/* Search */}
+                    <div className="flex items-center gap-2 bg-navy-900/60 border border-slate-700 rounded-lg px-2 py-1.5">
+                      <Search size={11} className="text-slate-500 shrink-0" />
+                      <input
+                        type="text"
+                        placeholder="Search language..."
+                        autoFocus
+                        value={langSearch}
+                        onChange={e => setLangSearch(e.target.value)}
+                        className="bg-transparent border-none outline-none text-xs text-white placeholder-slate-500 w-full"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Language list */}
+                  <div className="max-h-60 overflow-y-auto custom-scrollbar py-1">
+                    {LANGUAGES.filter(l =>
+                      l.label.toLowerCase().includes(langSearch.toLowerCase()) ||
+                      l.code.toLowerCase().includes(langSearch.toLowerCase())
+                    ).map(lang => {
+                      const isActive = activeLang.code === lang.code;
+                      return (
+                        <button
+                          key={lang.code}
+                          onClick={() => selectLanguage(lang)}
+                          className={`w-full flex items-center gap-3 px-3 py-2 text-sm transition-all duration-150 border-l-2 ${
+                            isActive
+                              ? 'bg-neon-cyan/10 border-neon-cyan text-neon-cyan font-bold'
+                              : 'border-transparent text-slate-300 hover:bg-white/5 hover:text-white hover:border-slate-500'
+                          }`}
+                        >
+                          <span
+                            className="text-[10px] font-black rounded px-1.5 py-0.5 leading-none shrink-0"
+                            style={{ backgroundColor: `${lang.color}25`, color: lang.color, border: `1px solid ${lang.color}50` }}
+                          >
+                            {lang.iso}
+                          </span>
+                          <span className="flex-1 text-left">{lang.label}</span>
+                          {isActive && <div className="w-1.5 h-1.5 rounded-full bg-neon-cyan" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-navy-800 border border-slate-700 relative group focus-within:border-neon-cyan focus-within:shadow-[0_0_15px_rgba(0,212,255,0.2)] transition-all duration-300" ref={searchRef}>
               <Search size={16} className={`transition-colors duration-300 ${isSearchOpen ? 'text-neon-cyan' : 'text-slate-400'}`} />
               <input
@@ -241,12 +429,25 @@ export default function Layout() {
                 className="flex items-center gap-2 cursor-pointer group"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
               >
+                {/* Profile avatar with Google photo fix */}
                 <div className="w-10 h-10 rounded-xl bg-navy-800 flex items-center justify-center shadow-lg border border-slate-700 overflow-hidden group-hover:border-neon-cyan transition-colors">
                   {user?.avatar ? (
-                    <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <User size={20} className="text-slate-400 group-hover:text-neon-cyan" />
-                  )}
+                    <img
+                      src={user.avatar}
+                      alt={user.name || 'Profile'}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                      onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                    />
+                  ) : null}
+                  <div
+                    className="w-full h-full items-center justify-center bg-gradient-to-br from-neon-cyan/30 to-neon-purple/30"
+                    style={{ display: user?.avatar ? 'none' : 'flex' }}
+                  >
+                    <span className="text-sm font-bold text-white">
+                      {(user?.name || 'U').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                 </div>
                 <ChevronDown size={14} className="text-slate-500 hidden sm:block group-hover:text-neon-cyan transition-colors" />
               </div>

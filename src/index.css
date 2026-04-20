@@ -550,3 +550,34 @@
 .auth-google-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
+
+/* ─── Ironclad Google Translate Override ─────────────────────────────────── */
+/* Force the body and html to ignore Google's injected top margin/padding */
+body, html {
+  top: 0px !important;
+  margin-top: 0px !important;
+  position: static !important;
+}
+
+/* Aggressively hide all known variants of the Google Translate banner iframe */
+.goog-te-banner-frame.skiptranslate, 
+.goog-te-banner-frame,
+iframe.skiptranslate,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  position: absolute !important;
+  z-index: -9999 !important;
+}
+
+/* Hide tooltips and default widgets */
+#goog-gt-tt, 
+.goog-te-balloon-frame,
+#google_translate_element {
+  display: none !important;
+  visibility: hidden !important;
+}

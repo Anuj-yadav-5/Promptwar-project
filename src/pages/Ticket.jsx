@@ -42,7 +42,16 @@ export default function Ticket() {
         {/* User Info Section */}
         <div className="flex-1 w-full space-y-6 relative z-10">
           <div className="flex items-center gap-4">
-             <img src={user?.avatar || `https://ui-avatars.com/api/?name=Guest`} alt="Profile" className="w-16 h-16 rounded-full border-2 border-neon-cyan shadow-[0_0_10px_rgba(0,212,255,0.5)]" />
+             <img 
+               src={user?.avatar || `https://ui-avatars.com/api/?name=Guest`} 
+               alt="Profile" 
+               className="w-16 h-16 rounded-full object-cover border-2 border-neon-cyan shadow-[0_0_10px_rgba(0,212,255,0.5)] shrink-0" 
+               referrerPolicy="no-referrer"
+               onError={(e) => {
+                 e.target.onerror = null;
+                 e.target.outerHTML = `<div class="w-16 h-16 rounded-full bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center text-white font-bold text-2xl shadow-[0_0_10px_rgba(0,212,255,0.5)] shrink-0 z-10 border-2 border-neon-cyan">${user?.name ? user.name.charAt(0).toUpperCase() : 'G'}</div>`;
+               }}
+             />
              <div>
                <h2 className="text-2xl font-bold text-white">{user?.name || 'Guest User'}</h2>
                <p className="text-neon-cyan font-medium text-sm flex items-center gap-1"><ShieldCheck size={14} /> Verified Member</p>

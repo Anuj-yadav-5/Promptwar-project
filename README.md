@@ -8,6 +8,7 @@
 ![Gemini AI](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google)
 ![Cloud Run](https://img.shields.io/badge/Cloud%20Run-Deployed-34A853?style=for-the-badge&logo=google-cloud)
 ![Tests](https://img.shields.io/badge/Tests-105%20Passing-00ff88?style=for-the-badge&logo=vitest)
+![Google Translate](https://img.shields.io/badge/Google%20Translate-20%20Languages-4285F4?style=for-the-badge&logo=google)
 
 **AI-driven real-time crowd management and venue operations dashboard for large-scale sporting events.**
 
@@ -21,14 +22,15 @@
 
 PulseArena AI transforms the physical event experience by solving the core problems of modern large-scale venues:
 
-- 🚶 **Crowd Congestion** — Real-time density monitoring across all stadium zones with live heatmap overlays
+- 🚶 **Crowd Congestion** — Real-time density monitoring across all stadium zones with live heatmap overlays and Google Charts visualization
 - ⏱️ **Long Wait Times** — Virtual queuing with AI-predicted wait times and digital position tracking
 - 🧭 **Navigation Confusion** — AI-recommended crowd-aware routing vs standard path comparisons
-- 🚨 **Safety Alerts** — Instant critical incident broadcasting with priority classification (Info / Warning / Critical)
+- 🚨 **Safety Alerts** — Instant critical incident broadcasting with OS-level push notifications
 - 🌤️ **Environmental Awareness** — Real-time weather telemetry via Open-Meteo API, anchored to stadium GPS coordinates
 - 🤖 **AI Assistant** — Context-aware chatbot powered by Google Gemini 2.5 Flash for instant query resolution
+- 🌍 **Multi-Language Support** — Full Google Translate integration across 20 languages with a beautiful custom UI
 
-Built for high-capacity operations exclusively engineered for 15 premier Indian Cricket Stadiums including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
+Built for high-capacity operations exclusively engineered for **15 premier Indian Cricket Stadiums** including **Narendra Modi Stadium (Ahmedabad)**, **Wankhede Stadium (Mumbai)**, and **Eden Gardens (Kolkata)**.
 
 ---
 
@@ -36,18 +38,20 @@ Built for high-capacity operations exclusively engineered for 15 premier Indian 
 
 | Module | Description |
 |---|---|
-| 📊 **Mission Control Dashboard** | Live KPIs: crowd flow score, attendance counter, alert feed, zone status grid |
-| 🌍 **Multi-Venue Management** | Switch between 15 major Indian cricket stadiums with re-anchored Leaflet map views |
+| 📊 **Mission Control Dashboard** | Live KPIs: crowd flow score, attendance counter, alert feed, Google Charts zone density visualization |
+| 🌍 **Multi-Venue Management** | Switch between 15 major Indian cricket stadiums with re-anchored Leaflet map views and Google Maps embed |
 | 🌤️ **Live Weather Widget** | Open-Meteo API pulling real-time atmospheric data per stadium GPS coordinates |
 | 🗺️ **Live Operations Map** | Interactive Leaflet.js map with real-time zone density heat overlays |
 | 🎫 **Smart Queue System** | Join queues digitally, track live position, auto-update every 3 seconds |
 | ⏱️ **Live Operations Clock** | Precision synchronized digital clock embedded in the global UI header |
 | 🔍 **Predictive Global Search** | Instant cross-dashboard search: venues, zones, features, and AI queries |
 | 🧭 **Smart Navigation** | Crowd-aware routing with side-by-side path comparisons and time savings |
-| 🎫 **Digital E-Tickets** | Authenticated QR pass with visually mocked "Add to Google Wallet" integration capability |
-| 🚨 **Alert Center** | Centralized hub for crowd, safety, weather, and system push notifications (FCM configured) |
+| 🎫 **Digital E-Tickets** | Authenticated QR pass with "Add to Google Wallet" integration and profile photo display |
+| 🚨 **Alert Center** | OS-level browser push notifications (Notification API) for critical crowd alerts |
+| 🌍 **Custom Language Selector** | Dark glassmorphism dropdown with 20 languages, ISO color badges, powered by Google Translate |
 | 🤖 **AI Assistant** | Gemini 2.5 Flash powered chatbot with rule-based fast paths + AI fallback |
 | 🔧 **Admin Console** | Admin-only panel with live Firebase Firestore zone override controls |
+| 📈 **Google Charts Analytics** | Live crowd density bar chart with real-time zone data, color-coded by status |
 
 ---
 
@@ -71,6 +75,28 @@ export async function generateQueueTip(queues) { /* ... */ }
 
 ---
 
+## 🌍 Multi-Language Support
+
+The platform supports **20 languages** via a fully custom-designed Google Translate integration:
+
+- **Custom UI** — Dark glassmorphism dropdown with searchable list, no default Google widget visible
+- **Color-coded ISO Badges** — Each language has a unique color badge (EN, HI, ES, FR, etc.) — works on all platforms including Windows
+- **20 Languages** — English, हिन्दी, Español, Français, Deutsch, 中文, العربية, Português, Русский, 日本語, 한국어, Italiano, தமிழ், తెలుగు, বাংলা, मराठी, ગુજરાતી, ਪੰਜਾਬੀ, اردو, Nederlands
+- **Persistent Selection** — Language choice is remembered across page navigations via cookie
+- **Clean UI** — Google Translate banner is completely hidden; page layout is unaffected
+
+---
+
+## 🔔 Push Notification System
+
+Real OS-level browser push notifications via the native **Web Notifications API**:
+
+- One-click permission request on the Alerts page
+- Critical alerts (High Density, Emergency) trigger native OS notifications even when the tab is in background
+- Graceful degradation if notification permissions are denied
+
+---
+
 ## 🔐 Security Architecture
 
 | Layer | Implementation |
@@ -81,6 +107,7 @@ export async function generateQueueTip(queues) { /* ... */ }
 | **Error Handling** | React `ErrorBoundary` wraps all routes — no blank screen crashes |
 | **Secrets** | All keys via `VITE_*` environment variables — never hardcoded |
 | **HTTP Headers** | nginx: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `X-XSS-Protection` |
+| **Profile Images** | `referrerPolicy="no-referrer"` + initial-badge fallback for cross-origin Google avatars |
 
 ---
 
@@ -94,6 +121,7 @@ export async function generateQueueTip(queues) { /* ... */ }
 | **esbuild Minification** | `build.minify: 'esbuild'` with `target: 'esnext'` |
 | **nginx gzip** | Compresses JS, CSS, JSON, SVG in transit |
 | **Asset Caching** | 1-year `Cache-Control: immutable` on all hashed bundles |
+| **Google Charts Safety** | Library/rendering split into two decoupled `useEffect` hooks with a global lock to prevent re-injection |
 | **Stable Effects** | Firebase listeners and simulation intervals isolated in `[isReady]`-gated effects — no memory leaks |
 | **React.memo** | `AiChatWidget` memoized to prevent re-renders on parent state changes |
 | **Throttled Simulation** | ~5% alert chance per 3s tick (~45s average interval) |
@@ -129,9 +157,11 @@ npm run test
 | Service | Usage |
 |---|---|
 | **Google Gemini 2.5 Flash** | AI generative insights (Dashboard, Alert Center, Queues, Chatbot) |
-| **Google Wallet API (Mock)**| Interactive UI capability configured on E-Ticket dashboard |
-| **Google Maps Indoor API (Mock)**| Indicated routing capability for intelligent pathfinding |
-| **Google Cloud Vision API (Mock)**| Indicated active CCTV density calculation in Admin panel |
+| **Google Translate API** | Full-page translation across 20 languages with custom-designed selector UI |
+| **Google Charts** | Live zone crowd density bar chart on Dashboard (real-time, color-coded) |
+| **Google Maps Embed** | Venue location display on Dashboard with directions link |
+| **Google Wallet API (Mock)** | Interactive UI capability configured on E-Ticket dashboard |
+| **Google Cloud Vision API (Mock)** | Indicated active CCTV density calculation in Admin panel |
 | **Firebase App Config** | Firebase Remote Config for remote venue mode and AI toggles |
 | **Firebase Authentication** | Email/Password + Google OAuth2 Sign-In + Password Reset |
 | **Firebase Analytics** | Page view and custom event tracking via `logEvent` + `trackEvent` |
@@ -169,11 +199,12 @@ All interactive elements follow WCAG 2.1 AA standards:
 | Framework | React 18 + Vite 6 |
 | Routing | React Router v6 |
 | State | React Context API + `useReducer` |
-| Styling | Vanilla CSS — custom Dark Cyber design system |
+| Styling | Vanilla CSS — custom Dark Cyber design system + Tailwind utilities |
 | Maps | Leaflet.js via `react-leaflet` |
-| Charts | Recharts |
+| Charts | Google Charts (live zone density) |
 | Icons | Lucide React |
 | AI/ML | Google Gemini 2.5 Flash (`@google/genai`) |
+| Translation | Google Translate API with custom glassmorphism UI |
 | Backend | Google Firebase (Auth, Firestore, Analytics, Performance) |
 | Build | Vite with esbuild minification + Rollup code splitting |
 | Testing | Vitest + Testing Library + jsdom |
@@ -214,7 +245,6 @@ VITE_FIREBASE_PROJECT_ID=your_project_id
 VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 VITE_ADMIN_EMAILS=admin@yourdomain.com
 VITE_GEMINI_API_KEY=your_gemini_api_key
 ```
@@ -275,27 +305,33 @@ src/
 ├── components/
 │   ├── AiChatWidget.jsx      # Floating AI chat assistant
 │   ├── ErrorBoundary.jsx     # React error boundary (crash protection)
-│   ├── Layout.jsx            # Global app frame (header, sidebar, toasts)
+│   ├── Layout.jsx            # Global app frame (header, language selector, toasts)
 │   ├── ProtectedRoute.jsx    # Auth + Admin route guards
-│   └── Sidebar.jsx           # Navigation sidebar with ARIA roles
+│   ├── Sidebar.jsx           # Navigation sidebar with ARIA roles
+│   ├── StatCard.jsx          # Animated KPI stat card component
+│   ├── DensityBadge.jsx      # Color-coded zone density status badge
+│   └── WeatherWidget.jsx     # Live weather via Open-Meteo API
 ├── context/
 │   ├── AuthContext.jsx       # Firebase auth state management
 │   └── CrowdContext.jsx      # Global crowd simulation + Firestore sync
 ├── pages/                    # Lazy-loaded route components
+│   ├── Dashboard.jsx         # Mission control + Google Charts + Google Maps
+│   ├── Alerts.jsx            # Alert center + OS push notifications
+│   ├── Ticket.jsx            # E-Ticket with QR + Google Wallet
+│   ├── AiAssistant.jsx       # Gemini AI chatbot interface
+│   ├── CrowdMap.jsx          # Leaflet interactive stadium map
+│   ├── QueueSystem.jsx       # Virtual queue management
+│   ├── Navigation.jsx        # Crowd-aware smart routing
+│   └── AdminDashboard.jsx    # Admin-only Firestore control panel
 ├── services/
 │   ├── alertEngine.js        # Random alert generation with JSDoc
 │   ├── chatbotEngine.js      # Gemini AI + rule-based hybrid engine
 │   ├── crowdSimulator.js     # Real-time crowd data simulation
-│   ├── firebase.js           # Firebase app + Auth + Firestore + Analytics + Performance
-│   └── firestoreService.js   # Firestore CRUD helpers (silent-fail)
-├── tests/
-│   ├── alertEngine.test.js
-│   ├── App.test.jsx
-│   ├── authContext.test.jsx
-│   ├── chatbotEngine.test.js
-│   ├── crowdSimulator.test.js
-│   ├── firestoreService.test.js
-│   └── setup.js
+│   ├── firebase.js           # Firebase app + Auth + Firestore + Analytics
+│   ├── firestoreService.js   # Firestore CRUD helpers (silent-fail)
+│   ├── geminiInsights.js     # Gemini AI workflows (dashboard/alert/queue)
+│   └── remoteConfigService.js# Firebase Remote Config sync
+├── tests/                    # 105 tests across 8 files
 └── constants/
     └── venues.js             # 15 Indian cricket stadium definitions
 ```
@@ -304,5 +340,5 @@ src/
 
 ## 👨‍💻 Developer
 
-**Anuj Yadav**
+**Anuj Yadav**  
 © 2026 PulseArena AI Platform. All rights reserved.
