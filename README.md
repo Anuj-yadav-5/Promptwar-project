@@ -41,7 +41,7 @@ Built for high-capacity operations exclusively engineered for **15 premier India
 | 📊 **Mission Control Dashboard** | Live KPIs: crowd flow score, attendance counter, alert feed, Google Charts zone density visualization |
 | 🌍 **Multi-Venue Management** | Switch between 15 major Indian cricket stadiums with re-anchored Leaflet map views and Google Maps embed |
 | 🌤️ **Live Weather Widget** | Open-Meteo API pulling real-time atmospheric data per stadium GPS coordinates |
-| 🗺️ **Live Operations Map** | Interactive Leaflet.js map with real-time zone density heat overlays |
+| 🗺️ **Live Operations Map** | Optimized Leaflet.js map — dashed stadium boundary, pitch oval, arc stand overlays, per-type zone badge markers (🚧🍔⛑️🅿️), live queue wait-time badges, density legend, recenter button, capacity-scaled overlays for all 15 venues |
 | 🎫 **Smart Queue System** | Join queues digitally, track live position, auto-update every 3 seconds |
 | ⏱️ **Live Operations Clock** | Precision synchronized digital clock embedded in the global UI header |
 | 🔍 **Predictive Global Search** | Instant cross-dashboard search: venues, zones, features, and AI queries |
@@ -122,6 +122,8 @@ Real OS-level browser push notifications via the native **Web Notifications API*
 | **nginx gzip** | Compresses JS, CSS, JSON, SVG in transit |
 | **Asset Caching** | 1-year `Cache-Control: immutable` on all hashed bundles |
 | **Google Charts Safety** | Library/rendering split into two decoupled `useEffect` hooks with a global lock to prevent re-injection |
+| **CrowdMap `useMemo`** | Position lookups, scale factor, arc polygons, filtered zones — all memoized; recalculate only on venue change |
+| **CrowdMap icons** | `makeZoneIcon` / `makeQueueIcon` defined outside component — zero re-creation cost per render tick |
 | **Stable Effects** | Firebase listeners and simulation intervals isolated in `[isReady]`-gated effects — no memory leaks |
 | **React.memo** | `AiChatWidget` memoized to prevent re-renders on parent state changes |
 | **Throttled Simulation** | ~5% alert chance per 3s tick (~45s average interval) |
