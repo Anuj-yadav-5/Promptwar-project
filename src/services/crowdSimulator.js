@@ -69,24 +69,45 @@ function randomFluctuation(base, variance = 0.15) {
   return base * (1 + (Math.random() - 0.5) * 2 * variance);
 }
 
+const BASE_TOTAL_CAPACITY = STADIUM_ZONES.reduce((acc, z) => acc + z.capacity, 0);
+
+// Keep track of current occupancy so it doesn't jump randomly every tick
+let zoneStates = {};
+
 /**
  * Generates real-time crowd density data for all stadium zones.
  * Applies event phase multipliers and random fluctuations.
+ * @param {number} venueCapacity - The total capacity of the active venue.
  * @returns {Array<Object>} Array of zone objects with occupancy, density, status, and trend.
  */
-export function generateZoneData() {
+export function generateZoneData(venueCapacity = BASE_TOTAL_CAPACITY) {
   tickCount++;
   // Switch phase every ~40 ticks (~2 minutes at 3s intervals)
   if (tickCount % 40 === 0) {
     advancePhase();
   }
 
+  const capacityScale = venueCapacity / BASE_TOTAL_CAPACITY;
+
   return DYNAMIC_ZONES.map(zone => {
     const multiplier = getMultiplier(zone.type);
-    const baseOccupancy = 0.4 + Math.random() * 0.3;
-    const occupancy = Math.min(1, randomFluctuation(baseOccupancy * multiplier));
-    const currentCount = Math.floor(zone.capacity * occupancy);
-    const density = occupancy;
+    
+    // Smooth random walk
+    if (!zoneStates[zone.id]) {
+      const baseOccupancy = 0.4 + Math.random() * 0.3;
+      zoneStates[zone.id] = { occupancy: Math.min(1, baseOccupancy * multiplier) };
+    }
+    
+    let currentOcc = zoneStates[zone.id].occupancy;
+    const targetOcc = Math.min(1, (0.4 + Math.random() * 0.3) * multiplier);
+    // Drift max 0.5% per tick towards target
+    const drift = (targetOcc - currentOcc) * 0.05 + ((Math.random() - 0.5) * 0.005);
+    currentOcc = Math.max(0, Math.min(1, currentOcc + drift));
+    zoneStates[zone.id].occupancy = currentOcc;
+
+    const scaledCapacity = Math.round(zone.capacity * capacityScale);
+    const currentCount = Math.floor(scaledCapacity * currentOcc);
+    const density = currentOcc;
 
     let status;
     if (density < 0.4) status = 'low';
@@ -94,12 +115,12 @@ export function generateZoneData() {
     else if (density < 0.85) status = 'high';
     else status = 'critical';
 
-    const trend = Math.random() > 0.5 ? 'up' : 'down';
+    const trend = drift > 0 ? 'up' : 'down';
 
     return {
       ...zone,
       currentCount,
-      occupancy: Math.round(occupancy * 100),
+      occupancy: Math.round(currentOcc * 100),
       density,
       status,
       trend,

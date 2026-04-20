@@ -137,7 +137,8 @@ export function CrowdProvider({ children }) {
     syncRemoteConfig().catch(() => {});
 
     // Generate initial dynamic frame based on mock locations
-    const zones = generateZoneData();
+    const initCapacity = parseInt(initialState.activeVenue.capacity.replace(/,/g, ''), 10);
+    const zones = generateZoneData(initCapacity);
     const queues = generateQueueData();
     const flowHistory = generateFlowHistory();
     const activityFeed = getActivityFeed();
@@ -165,11 +166,20 @@ export function CrowdProvider({ children }) {
     setTimeout(() => dispatch({ type: 'REMOVE_TOAST', payload: toastId }), 5000);
   }, []);
 
-  // Real-time crowd simulation — stable interval, no dependency on state.alerts
+  // Real-time crowd simulation — updates when venue changes
   useEffect(() => {
     if (!isReady) return;
+
+    const venueCapacity = parseInt((state.activeVenue?.capacity || '100900').replace(/,/g, ''), 10);
+    
+    // Immediate update so dashboard reflects new capacity without 3s delay
+    const immediateZones = generateZoneData(venueCapacity);
+    const immediateQueues = generateQueueData();
+    const immediatePhase = getCurrentPhase();
+    dispatch({ type: 'UPDATE_CROWD_DATA', payload: { zones: immediateZones, queues: immediateQueues, currentPhase: immediatePhase } });
+
     const interval = setInterval(() => {
-      const zones = generateZoneData();
+      const zones = generateZoneData(venueCapacity);
       const queues = generateQueueData();
       const currentPhase = getCurrentPhase();
       dispatch({ type: 'UPDATE_CROWD_DATA', payload: { zones, queues, currentPhase } });
@@ -188,7 +198,7 @@ export function CrowdProvider({ children }) {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [isReady]); // ✅ Stable — only runs once when ready
+  }, [isReady, state.activeVenue]); // Re-run when venue changes to update simulation capacity
 
   // Firebase listeners — mounted once, never torn down unnecessarily
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Users, Clock, AlertTriangle, Activity, ChevronRight, Activity as PulseI
 import StatCard from '../components/StatCard';
 import DensityBadge from '../components/DensityBadge';
 import WeatherWidget from '../components/WeatherWidget';
+import LiveScorecard from '../components/LiveScorecard';
 import { useCrowd } from '../context/CrowdContext';
 import { generateCrowdInsight } from '../services/geminiInsights';
 
@@ -168,7 +169,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Activity Feed */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-panel p-6">
+          <div className="glass-panel-hover p-6 animate-slide-up" style={{ animationDelay: '100ms' }}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <PulseIcon size={20} className="text-neon-cyan" />
@@ -196,7 +197,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Google Charts: Zone Density Chart ─────────────────────────── */}
-          <div className="glass-panel p-6">
+          <div className="glass-panel-hover p-6 animate-slide-up" style={{ animationDelay: '200ms' }}>
             <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-1">
               <BarChart2 size={20} className="text-neon-cyan" />
               Live Zone Density
@@ -208,11 +209,14 @@ export default function Dashboard() {
 
         {/* Right Sidebar: Predictions & Hotspots */}
         <div className="space-y-6">
+          {/* Live Scorecard Integration */}
+          <LiveScorecard />
+
           {/* Live Weather */}
           <WeatherWidget />
 
           {/* ── Google Maps Embed: Venue Location ─────────────────────────── */}
-          <div className="glass-panel p-4">
+          <div className="glass-panel-hover p-4 animate-slide-up" style={{ animationDelay: '300ms' }}>
             <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
               <MapPin size={16} className="text-neon-cyan" />
               Venue Location
@@ -241,7 +245,7 @@ export default function Dashboard() {
           </div>
 
           {/* AI Predictions */}
-          <div className="glass-panel p-6 border-neon-purple/30">
+          <div className="glass-panel-hover p-6 border-neon-purple/30 animate-slide-up" style={{ animationDelay: '400ms' }}>
             <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Activity size={18} className="text-neon-purple" />
               AI Predictions
@@ -266,7 +270,7 @@ export default function Dashboard() {
           </div>
 
           {/* Current Hotspots */}
-          <div className="glass-panel p-6">
+          <div className="glass-panel-hover p-6 animate-slide-up" style={{ animationDelay: '500ms' }}>
             <h2 className="text-lg font-bold text-white mb-4">Current Hotspots</h2>
             <div className="space-y-3">
               {topCrowded.map(zone => (

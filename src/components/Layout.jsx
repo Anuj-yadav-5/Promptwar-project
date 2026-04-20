@@ -210,9 +210,11 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-navy-900 relative">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="flex h-screen overflow-hidden bg-[#050814] relative text-slate-200">
+      {/* ── Kinetic Aurora Background ── */}
+      <div className="absolute top-[-15%] left-[-10%] w-[50%] h-[50%] bg-neon-purple/20 rounded-full blur-[140px] pointer-events-none animate-blob" style={{ animationDelay: '0s' }} />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-neon-cyan/20 rounded-full blur-[140px] pointer-events-none animate-blob-reverse" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-[30%] left-[20%] w-[35%] h-[35%] bg-neon-pink/10 rounded-full blur-[160px] pointer-events-none animate-blob" style={{ animationDelay: '4s' }} />
 
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 

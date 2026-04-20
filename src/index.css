@@ -37,27 +37,31 @@
 }
 
 @layer components {
+  /* Premium Glassmorphism styling */
   .glass-panel {
-    background: rgba(15, 21, 53, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 212, 255, 0.1);
-    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(15, 21, 53, 0.7), rgba(10, 14, 39, 0.8));
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: inset 0 2px 20px rgba(255, 255, 255, 0.02), 0 10px 40px -10px rgba(0, 0, 0, 0.5);
   }
 
   .glass-panel-hover {
-    background: rgba(15, 21, 53, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 212, 255, 0.1);
-    border-radius: 16px;
-    transition: all 0.3s ease;
+    background: linear-gradient(145deg, rgba(15, 21, 53, 0.7), rgba(10, 14, 39, 0.8));
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: inset 0 2px 20px rgba(255, 255, 255, 0.02), 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .glass-panel-hover:hover {
-    border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
-    transform: translateY(-2px);
+    background: linear-gradient(145deg, rgba(20, 28, 70, 0.8), rgba(12, 18, 48, 0.9));
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: inset 0 2px 20px rgba(255, 255, 255, 0.04), 0 15px 50px -10px rgba(0, 212, 255, 0.2);
+    transform: translateY(-4px) scale(1.01);
   }
 
   .gradient-text {
@@ -103,19 +107,35 @@
   }
 
   .stat-glow-cyan {
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.15);
+    box-shadow: 0 0 40px -10px rgba(0, 212, 255, 0.3), inset 0 0 20px -10px rgba(0, 212, 255, 0.1);
+  }
+
+  .stat-glow-cyan:hover {
+    box-shadow: 0 0 60px -10px rgba(0, 212, 255, 0.5), inset 0 0 30px -10px rgba(0, 212, 255, 0.2);
   }
 
   .stat-glow-purple {
-    box-shadow: 0 0 30px rgba(123, 47, 247, 0.15);
+    box-shadow: 0 0 40px -10px rgba(123, 47, 247, 0.3), inset 0 0 20px -10px rgba(123, 47, 247, 0.1);
+  }
+
+  .stat-glow-purple:hover {
+    box-shadow: 0 0 60px -10px rgba(123, 47, 247, 0.5), inset 0 0 30px -10px rgba(123, 47, 247, 0.2);
   }
 
   .stat-glow-pink {
-    box-shadow: 0 0 30px rgba(255, 45, 149, 0.15);
+    box-shadow: 0 0 40px -10px rgba(255, 45, 149, 0.3), inset 0 0 20px -10px rgba(255, 45, 149, 0.1);
+  }
+
+  .stat-glow-pink:hover {
+    box-shadow: 0 0 60px -10px rgba(255, 45, 149, 0.5), inset 0 0 30px -10px rgba(255, 45, 149, 0.2);
   }
 
   .stat-glow-green {
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+    box-shadow: 0 0 40px -10px rgba(0, 255, 136, 0.3), inset 0 0 20px -10px rgba(0, 255, 136, 0.1);
+  }
+
+  .stat-glow-green:hover {
+    box-shadow: 0 0 60px -10px rgba(0, 255, 136, 0.5), inset 0 0 30px -10px rgba(0, 255, 136, 0.2);
   }
 }
 

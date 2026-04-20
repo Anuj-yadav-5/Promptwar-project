@@ -63,7 +63,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </div>
 
         <nav role="navigation" aria-label="Main navigation" className="flex-1 px-4 py-6 space-y-2">
-          {visibleNavItems.map((item) => {
+          {visibleNavItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
 
@@ -74,9 +74,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 onClick={() => setIsOpen(false)}
                 aria-current={isActive ? 'page' : undefined}
                 aria-label={item.label}
-                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${isActive
+                style={{ animationDelay: `${index * 50}ms` }}
+                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group animate-slide-up ${isActive
                     ? `bg-neon-${item.color}/10 border border-neon-${item.color}/30 text-white shadow-[0_0_15px_rgba(var(--color-${item.color}),0.15)]`
-                    : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:translate-x-1'
                   }`}
               >
                 <div className="flex items-center gap-3">

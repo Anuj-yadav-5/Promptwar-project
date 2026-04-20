@@ -56,7 +56,7 @@ export default function WeatherWidget() {
   if (!venue) return null;
 
   return (
-    <div className="glass-panel p-6 border-neon-cyan/20 animate-slide-up hover:border-neon-cyan/40 hover:shadow-[0_0_20px_rgba(0,212,255,0.1)] transition-all duration-300">
+    <div className="glass-panel-hover p-6 animate-slide-up" style={{ animationDelay: '200ms' }}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
           <Sun size={18} className="text-yellow-400" />

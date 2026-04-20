@@ -201,9 +201,9 @@ export default function CrowdMap() {
           { key: 'high',     color: '#ff8c00', icon: AlertTriangle, label: 'High'     },
           { key: 'moderate', color: '#eab308', icon: Info,          label: 'Moderate' },
           { key: 'low',      color: '#00ff88', icon: CheckCircle2,  label: 'Clear'    },
-        ].map(({ key, color, icon: Icon, label }) => (
-          <div key={key} className="glass-panel rounded-xl px-3 py-2 flex items-center gap-2 border-0"
-            style={{ borderLeft: `3px solid ${color}` }}>
+        ].map(({ key, color, icon: Icon, label }, i) => (
+          <div key={key} className="glass-panel-hover rounded-xl px-3 py-2 flex items-center gap-2 border-0 animate-slide-up"
+            style={{ borderLeft: `3px solid ${color}`, animationDelay: `${i * 100}ms` }}>
             <Icon size={14} style={{ color }} />
             <div>
               <p className="text-[10px] text-slate-400">{label}</p>
@@ -218,7 +218,7 @@ export default function CrowdMap() {
 
         {/* Zone detail floating panel */}
         {activeZone && (
-          <div className="absolute top-3 left-3 z-[400] w-64 glass-panel p-4 border-neon-cyan/30 shadow-2xl animate-fade-in">
+          <div className="absolute top-3 left-3 z-[400] w-64 glass-panel-hover p-4 border-neon-cyan/30 shadow-2xl animate-fade-in">
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-bold text-white text-sm leading-tight pr-2">{activeZone.name}</h3>
               <DensityBadge status={activeZone.status} />
@@ -254,7 +254,7 @@ export default function CrowdMap() {
         )}
 
         {/* Density legend */}
-        <div className="absolute bottom-3 right-3 z-[400] glass-panel p-2.5 rounded-xl text-xs space-y-1.5">
+        <div className="absolute bottom-3 right-3 z-[400] glass-panel-hover p-2.5 rounded-xl text-xs space-y-1.5 animate-slide-up" style={{ animationDelay: '300ms' }}>
           <p className="text-slate-500 font-semibold text-[9px] uppercase tracking-wider">Density</p>
           {[['#00ff88','Low'],['#eab308','Moderate'],['#ff8c00','High'],['#ff3355','Critical']].map(([c,l]) => (
             <div key={l} className="flex items-center gap-2">
